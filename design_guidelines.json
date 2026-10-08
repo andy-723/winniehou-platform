@@ -1,113 +1,175 @@
 {
-  "project_name": "Winnie Hou — Business English Mastery LMS",
-  "app_type": "hybrid_fullstack",
-  "archetype": "LUXURY_EDITORIAL_ACADEMIC",
-  "theme": {
-    "palette": {
-      "navy_primary": "#0A192F",
-      "navy_dark": "#060F1E",
-      "navy_surface": "#0F2342",
-      "gold_accent": "#D4AF37",
-      "gold_light": "#F3E5AB",
-      "gold_muted": "#B89732",
-      "ivory_bg": "#FAFAF7",
-      "ivory_card": "#FFFFFF",
-      "ivory_muted": "#F3F3EE",
-      "slate_text": "#1E293B",
-      "muted_text": "#64748B",
-      "border_subtle": "#E2E8F0"
-    },
-    "dark_mode_video_player": {
-      "background": "#0B1120",
-      "sidebar": "#070D18",
-      "text": "#F8FAFC",
-      "border": "#1E293B"
-    }
+  "app_identity": {
+    "title": "Winnie Hou — Business English Mastery LMS",
+    "positioning": "A elite LMS and executive coaching platform for global working professionals to master C-suite Business English, executive presence, and high-stakes negotiation.",
+    "visual_direction": "Velvet Rope Membership & Editorial Elite. Modeled after candaceowens.com layout (horizontal scroll rows, explore-all links, bold editorial hero, membership CTA band, dark luxury surface) re-colored to Navy, Gold, and Ivory."
+  },
+  "pricing_funnel_rule": {
+    "is_public_pricing_hidden": true,
+    "public_page_cta_label": "Enquire",
+    "public_service_pricing_label": "POA (Price on Application)",
+    "checkout_landing_page": "/start",
+    "rule_details": "DO NOT surface dollar prices or instant purchase buy-now buttons on public pages (Home, Catalog, Course Detail, Shop, Coaching). All public cards show 'Enquire' or 'Explore Course'. Real pricing and instant Stripe deposit/checkout are strictly reserved for the personalized /start prospect landing page."
   },
   "typography": {
-    "font_pairing_strategy": "Editorial Classic Headings + Clean Modern Sans Body",
-    "heading_font_family": "Playfair Display, Cormorant Garamond, Georgia, serif",
-    "body_font_family": "Inter, System UI, -apple-system, sans-serif",
-    "accent_font_family": "JetBrains Mono, Source Code Pro, monospace",
-    "scale": {
-      "h1": "text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight leading-tight",
-      "h2": "text-2xl sm:text-3xl lg:text-4xl font-serif tracking-tight leading-snug",
-      "h3": "text-xl sm:text-2xl font-serif font-semibold",
-      "h4": "text-lg sm:text-xl font-sans font-semibold",
-      "body_lg": "text-lg font-sans leading-relaxed text-slate-700",
-      "body_base": "text-base font-sans leading-relaxed text-slate-600",
-      "body_sm": "text-sm font-sans text-slate-500",
-      "eyebrow": "text-xs font-mono uppercase tracking-[0.2em] text-amber-600 font-semibold"
+    "heading_font": "'Playfair Display', serif",
+    "body_font": "'Manrope', sans-serif",
+    "accent_mono_font": "'JetBrains Mono', monospace",
+    "hierarchy": {
+      "hero_h1": "text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight leading-[1.1] text-[#F9F8F3]",
+      "section_h2": "text-2xl sm:text-3xl lg:text-4xl font-serif tracking-tight text-[#F9F8F3]",
+      "card_title_h3": "text-lg sm:text-xl font-serif font-medium text-[#F9F8F3] group-hover:text-[#D4AF37] transition-colors",
+      "overline_badge": "text-xs font-mono uppercase tracking-[0.2em] text-[#D4AF37]",
+      "body_text": "text-base font-sans text-slate-300 leading-relaxed"
     }
   },
-  "spacing_and_layout": {
-    "philosophy": "Generous executive spacing, luxury borders with subtle 1px gold/slate strokes, elevated card depth",
-    "grid_modes": {
-      "marketing_bento": "grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12",
-      "catalog_grid": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
-      "dashboard_grid": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6",
-      "admin_grid": "grid grid-cols-1 md:grid-cols-4 gap-6"
-    },
-    "course_player_layout": "Flex/Grid 2-column interface: Left Collapsible Curriculum Rail (w-80), Right Video & Lesson Panel (flex-1). Dark mode viewport for video area with watermark string layer."
+  "color_palette": {
+    "primary_dark_bg": "#0A192F",
+    "secondary_dark_bg": "#050E1E",
+    "card_surface_bg": "#0F213D",
+    "card_surface_hover_bg": "#162C4E",
+    "gold_accent": "#D4AF37",
+    "gold_accent_hover": "#E5C158",
+    "gold_glow": "rgba(212, 175, 55, 0.3)",
+    "ivory_text": "#F9F8F3",
+    "muted_slate": "#94A3B8",
+    "border_subtle": "rgba(212, 175, 55, 0.18)",
+    "border_active": "rgba(212, 175, 55, 0.60)",
+    "glass_header_bg": "rgba(10, 25, 47, 0.85)",
+    "contrast_light_section_bg": "#F9F8F3",
+    "contrast_light_section_text": "#0A192F"
   },
-  "visual_enhancers": {
-    "card_style": "bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition-all rounded-xl overflow-hidden p-6 md:p-8",
-    "featured_card_style": "bg-gradient-to-br from-[#0A192F] via-[#0F2342] to-[#0A192F] text-white border border-amber-500/30 rounded-xl shadow-xl p-8 relative overflow-hidden",
-    "gold_badge": "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200",
-    "watermark_overlay": "absolute inset-0 pointer-events-none opacity-15 select-none flex items-center justify-center text-xs font-mono text-white/40 tracking-widest uppercase transform -rotate-12 z-20"
-  },
-  "component_guidelines": {
-    "header_nav": "Sticky header with backdrop-blur-md bg-[#0A192F]/95 text-white border-b border-amber-500/20 z-50 px-6 py-4. Contains logo ('WINNIE HOU'), Course Catalog, Shop, Blog, My Courses, Cart, Auth CTA.",
-    "buttons": {
-      "primary": "bg-[#0A192F] hover:bg-[#0F2342] text-white font-medium px-6 py-3 rounded-lg border border-amber-500/30 shadow-md hover:border-amber-500/60 transition-all cursor-pointer flex items-center justify-center gap-2",
-      "gold_cta": "bg-amber-500 hover:bg-amber-400 text-[#0A192F] font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-amber-500/20 transition-all cursor-pointer flex items-center justify-center gap-2",
-      "secondary": "bg-stone-100 hover:bg-stone-200 text-slate-800 font-medium px-5 py-2.5 rounded-lg border border-slate-300 transition-all cursor-pointer"
+  "candace_owens_layout_system": {
+    "navigation_bar": {
+      "style": "Fixed sticky top bar, dark navy glass with 12px blur, 1px gold bottom stroke",
+      "classes": "fixed top-0 left-0 right-0 z-50 bg-[#0A192F]/85 backdrop-blur-md border-b border-[#D4AF37]/20 px-6 py-4 flex items-center justify-between",
+      "elements": [
+        "Brand Logo: 'WINNIE HOU' in gold Playfair Display + 'BUSINESS ENGLISH MASTERY' subtext",
+        "Nav Links: Courses, Coaching, Shop, Blog, About, Contact",
+        "Right Side Actions: 'Student Portal' link + 'Personalized Plan' CTA button"
+      ]
     },
-    "inputs": "Shadcn Form, Input, Select, Checkbox heavily customized with rounded-lg border-slate-300 focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 p-3"
+    "hero_banner": {
+      "style": "Full-bleed editorial banner with ambient dark gradient overlay, gold accent line, and Winnie Hou executive portrait backdrop",
+      "classes": "relative min-h-[85vh] flex items-center justify-center pt-24 pb-16 px-6 bg-[#0A192F] overflow-hidden",
+      "content": "Serif H1 headline 'Master High-Stakes Business English with C-Suite Authority', subtitle, dual CTAs: 'Explore Masterclasses' (gold outline) and 'Get Personal Roadmap' (gold filled -> /start)"
+    },
+    "horizontal_carousel_row": {
+      "style": "Modeled after candaceowens.com content rows. Section header on top with title on left and 'Explore All →' link on right. Horizontal scrollable container containing 16:9 aspect thumbnail cards.",
+      "container_classes": "py-12 px-6 sm:px-12 max-w-7xl mx-auto border-b border-[#D4AF37]/10",
+      "scroll_track_classes": "flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-4 pt-2"
+    },
+    "card_design": {
+      "aspect_ratio": "aspect-[16/9] or aspect-[4/3] relative rounded-lg overflow-hidden bg-[#0F213D] border border-[#D4AF37]/20",
+      "hover_effect": "group-hover:-translate-y-1 group-hover:border-[#D4AF37] group-hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] transition-all duration-300",
+      "badges": [
+        "Gold Badge top-left: 'EXECUTIVE', 'MOST POPULAR', 'WORKBOOK'",
+        "Bottom overlay: Lesson count / Duration tag"
+      ],
+      "card_footer": "Category, Playfair title, module summary, 'Enquire' or 'View Details' link"
+    },
+    "membership_cta_band": {
+      "title": "Step Behind the Velvet Rope of C-Suite Communication",
+      "style": "Gold-bordered velvet dark container with subtle gold radial shimmer, large serif prompt, and exclusive invitation CTA to /start",
+      "classes": "my-16 mx-6 sm:mx-12 rounded-2xl bg-gradient-to-r from-[#050E1E] via-[#0F213D] to-[#050E1E] border border-[#D4AF37]/40 p-10 sm:p-16 text-center relative overflow-hidden shadow-2xl"
+    },
+    "contrast_light_editorial_band": {
+      "style": "Ivory background break section (#F9F8F3) inserted between dark navy sections for high-end editorial contrast",
+      "classes": "py-20 px-6 bg-[#F9F8F3] text-[#0A192F]"
+    }
+  },
+  "section_order_by_page": {
+    "Home": [
+      "Sticky Nav",
+      "Editorial Hero Banner with Winnie Hou Portrait Backdrop & Dual CTAs",
+      "Authority Bar (Corporate Logos & Media Features: HSBC, McKinsey, ByteDance, Forbes)",
+      "Horizontal Carousel Row: Featured Masterclasses (cards with Enquire CTA)",
+      "Contrast Light Editorial Band: The Winnie Hou Method & Value Pillars",
+      "Horizontal Carousel Row: Digital Workbook Shop Showcase",
+      "Coaching Services Spotlight (1-on-1 Executive Coaching POA)",
+      "Horizontal Carousel Row: Executive Insights & Blog",
+      "Velvet-Rope Membership CTA Band ('Step Behind the Velvet Rope')",
+      "Footer"
+    ],
+    "Catalog": [
+      "Sticky Nav",
+      "Catalog Header with Search & Level/Topic Filter Chips",
+      "Horizontal / Grid Layout of Course Cards (Searchable, Category Badges, Enquire CTAs)",
+      "Free Preview Banner",
+      "Velvet-Rope Membership CTA Band",
+      "Footer"
+    ],
+    "CourseDetail": [
+      "Sticky Nav",
+      "Course Hero (Thumbnail, Level, Overview, Enquire CTA)",
+      "Curriculum Module Accordion with Free Preview Video Trigger",
+      "Instructor Bio & Case Studies",
+      "Related Courses Carousel",
+      "Footer"
+    ],
+    "Services": [
+      "Sticky Nav",
+      "Executive Coaching Hero (POA - Price on Application)",
+      "3-Tier Coaching Packages (1-on-1 C-Suite, Boardroom Speaking, Corporate Cohort)",
+      "Application & Waitlist Enquiry Form",
+      "Footer"
+    ],
+    "Shop": [
+      "Sticky Nav",
+      "Workbook Shop Header",
+      "Filterable Grid of Digital Workbooks & Audio Guides",
+      "Product Detail Drawer / Modal with Enquire CTA",
+      "Footer"
+    ],
+    "Blog": [
+      "Sticky Nav",
+      "Featured Editorial Article Banner",
+      "Horizontal Scroll Carousel of Recent Insights",
+      "Article Grid & Category Filter",
+      "Footer"
+    ],
+    "About": [
+      "Sticky Nav",
+      "Winnie Hou Story Hero",
+      "Timeline / Experience Milestones",
+      "Client Success Stories & Student Gallery",
+      "Footer"
+    ],
+    "Contact": [
+      "Sticky Nav",
+      "Contact & Executive Enquiry Form",
+      "WeChat QR Code & Direct Email Cards",
+      "Footer"
+    ],
+    "StartPage": [
+      "Sticky Nav",
+      "Personalized Prospect Header (Name & Strategy Greeting)",
+      "Full Pricing Unlocked Section (Stripe Deposit / Purchase Options)",
+      "Calendly Booking Embed / Consultation Slot Picker",
+      "Guarantees & Program Terms",
+      "Footer"
+    ]
   },
   "image_urls": {
-    "winnie_instructor": {
-      "url": "https://images.unsplash.com/photo-1637589267610-6c66fc2a086b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwyfHxwcm9mZXNzaW9uYWwlMjBidXNpbmVzcyUyMGVuZ2xpc2glMjBleGVjdXRpdmUlMjBwcmVzZW50YXRpb24lMjBjb3Jwb3JhdGUlMjB3b21hbnxlbnwwfHx8fDE3OTE0NDA1NzB8MA&ixlib=rb-4.1.0&q=85",
-      "alt": "Winnie Hou - Business English Coach",
-      "usage": "Hero section, About instructor section, Course detail author box"
-    },
-    "winnie_teaching": {
-      "url": "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHxfHxwcm9mZXNzaW9uYWwlMjBidXNpbmVzcyUyMGVuZ2xpc2glMjBleGVjdXRpdmUlMjBwcmVzZW50YXRpb24lMjBjb3Jwb3JhdGUlMjB3b21hbnxlbnwwfHx8fDE3OTE0NDA1NzB8MA&ixlib=rb-4.1.0&q=85",
-      "alt": "Executive English Masterclass Presentation",
-      "usage": "Masterclass preview hero, course thumbnails"
-    },
-    "winnie_holding_book": {
-      "url": "https://images.unsplash.com/photo-1696960190602-7389f3b24a22?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHw0fHxwcm9mZXNzaW9uYWwlMjBidXNpbmVzcyUyMGVuZ2xpc2glMjBleGVjdXRpdmUlMjBwcmVzZW50YXRpb24lMjBjb3Jwb3JhdGUlMjB3b21hbnxlbnwwfHx8fDE3OTE0NDA1NzB8MA&ixlib=rb-4.1.0&q=85",
-      "alt": "Business English Workbook Edition",
-      "usage": "Shop workbook cards, digital product details"
-    },
-    "executive_meeting": {
-      "url": "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHxfHxiaXNpbmVzcyUyMG1lZXRpbmclMjBleGVjdXRpdmUlMjBjb25mZXJlbmNlJTIwcHJlc2VudGF0aW9ufGVufDB8fHx8MTc5MTQ0MDU3N3ww&ixlib=rb-4.1.0&q=85",
-      "alt": "Boardroom Executive Negotiation Course",
-      "usage": "Course detail hero banner, corporate training section"
-    },
-    "presentation_collaboration": {
-      "url": "https://images.unsplash.com/photo-1581091877018-dac6a371d50f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHw0fHxidXNpbmVzcyUyMG1lZXRpbmclMjBleGVjdXRpdmUlMjBjb3Jwb3JhdGUlMjB3b21hbnxlbnwwfHx8fDE3OTE0NDA1NzB8MA&ixlib=rb-4.1.0&q=85",
-      "alt": "Email & Pitch Negotiation Module",
-      "usage": "Blog post headers, course module card background"
-    },
-    "workbook_mockup_1": {
-      "url": "https://images.unsplash.com/photo-1621944190310-e3cca1564bd7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHw0fHxtaW5pbWFsJTIwYm9vayUyMG5vdGVib29rJTIwY292ZXIlMjBqb3VybmFsJTIwbW9jayUyMHVwfGVufDB8fHx8MTc5MTQ0MDU3N3ww&ixlib=rb-4.1.0&q=85",
-      "alt": "The Executive Email Playbook 2026",
-      "usage": "Shop section item 1"
-    },
-    "workbook_mockup_2": {
-      "url": "https://images.unsplash.com/photo-1519764340700-3db40311f21e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHxfHxtaW5pbWFsJTIwYm9vayUyMG5vdGVib29rJTIwY292ZXIlMjBqb3VybmFsJTIwbW9jayUyMHVwfGVufDB8fHx8MTc5MTQ0MDU3N3ww&ixlib=rb-4.1.0&q=85",
-      "alt": "High-Stakes Presentation Templates PDF",
-      "usage": "Shop section item 2"
-    }
+    "hero_backdrop": "https://images.unsplash.com/photo-1758691736821-f1a600c0c3f1?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "winnie_presenting": "https://images.unsplash.com/photo-1758691736545-5c33b6255dca?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "boardroom_coaching": "https://images.unsplash.com/photo-1758691737182-d42aefd6dee8?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "executive_meeting": "https://images.unsplash.com/photo-1758691736580-a41e0cfe9e9f?crop=entropy&cs=srgb&fm=jpg&q=85"
+  },
+  "data_testid_requirement": {
+    "mandatory": true,
+    "pattern": "kebab-case data-testid on every button, link, search input, filter chip, card, modal, enquiry form, and navigation item (e.g., data-testid='nav-courses-link', data-testid='course-card-enquire-btn', data-testid='start-checkout-btn')"
   },
   "instructions_to_main_agent": [
-    "Follow the navy (#0A192F), gold (#D4AF37), and ivory/white visual identity strictly.",
-    "Implement editorial typography: Playfair Display for main titles and section headings, Inter for body and dashboard text.",
-    "Ensure all interactive elements have data-testid attributes for testing.",
-    "Build full functionality for Student LMS flow, Shop, Checkout, Course Player with watermark overlay, and Admin CMS at /admin.",
-    "Ensure Bunny Stream video player simulation includes watermark overlay showing the active student email.",
-    "Provide filtering, search, coupon application, progress tracking, and full admin management."
-  ]
+    "1. Ensure Playfair Display font is loaded in index.html for all headings, and Manrope is set as font-sans.",
+    "2. Ensure all dark backgrounds use Navy #0A192F as primary, Midnight #050E1E for secondary depth, and Gold #D4AF37 for accents and borders.",
+    "3. Apply horizontal scroll carousels for course, shop, and blog rows on the Home page and Catalog, adhering to the Candace Owens UI model with 'Explore All →' links.",
+    "4. Maintain hidden pricing on public pages (show 'Enquire' / 'POA'). Unlock pricing and direct Stripe checkout ONLY on /start.",
+    "5. Add data-testid attributes to all interactive elements."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": {
+    "avoid_ai_slop": "No generic centered cards with standard grey backgrounds. Use rich navy layers, gold ambient glows, and crisp 1px borders.",
+    "no_universal_transition": "Do NOT use transition: all. Use specific transition properties like transition-colors or transition-transform.",
+    "data_testid_coverage": "100% testid coverage on interactive elements."
+  }
 }

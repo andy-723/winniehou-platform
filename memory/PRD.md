@@ -45,6 +45,13 @@ Premium LMS + e-commerce for working professionals: course catalog, Stripe one-t
 - Self-tested: lead-visit logging + admin list via curl; /start render (greeting + revealed pricing + fallback CTA) via screenshot. Note: the broader "automation front" (Typeform→Make.com→Gamma CDP→Google Sheets) in Andrew's As-Built doc is EXTERNAL SaaS, not in this app's scope — the platform only provides the /start endpoint.
 
 ## Backlog / Roadmap
+
+### UI redesign — Candace-Owens model (2026-10-08, in progress)
+- Modeled on candaceowens.com (dark premium "velvet-rope", horizontal content carousels with "Explore all", editorial hero, membership CTA band) recoloured to navy #0A192F / gold #D4AF37 / ivory #F9F8F3. Blueprint: `/app/design_guidelines.json`.
+- DONE: design-system utilities in index.css (scrollbar-none, btn-gold-outline, eyebrow-dark, shimmer); new Shared components `CourseCard` (dark), `ContentRow` (carousel), `MembershipBand`; **Home** and **Catalog** fully redesigned. Funnel pricing preserved (no public prices; "Enquire"/POA).
+- TODO (propagate same dark system): Course Detail, Services, Shop, Blog, About, Contact, /start, Student Dashboard. Awaiting user approval of direction before site-wide rollout.
+- Preview-check 2026-10-08 resolved: prices confirmed correct as seeded; POA-vs-/start is by-design (funnel kept); invented-copy scrub deferred (wording TBD); test-data cleanup deferred.
+
 - P0: Bunny Stream credentials (BUNNY_LIBRARY_ID, BUNNY_STREAM_API_KEY, BUNNY_TOKEN_AUTH_KEY) → verify upload + signed embed. (Pending user keys.)
 - P0: Revised "automation front" MD — user referenced a local Downloads MD that was NOT uploaded; re-request before building Phase E.
 - P1 (Build Plan Phase C): Student performance tracker — DONE 2026-10-08 (iteration_3).
