@@ -25,6 +25,8 @@ import AdminCourses from "@/pages/admin/AdminCourses";
 import CourseEditor from "@/pages/admin/CourseEditor";
 import AdminStudents from "@/pages/admin/AdminStudents";
 import AdminServices from "@/pages/admin/AdminServices";
+import AdminClients from "@/pages/admin/AdminClients";
+import AdminTime from "@/pages/admin/AdminTime";
 import AdminOrders from "@/pages/admin/AdminOrders";
 import AdminCoupons from "@/pages/admin/AdminCoupons";
 import AdminProducts from "@/pages/admin/AdminProducts";
@@ -85,6 +87,8 @@ export default function App() {
                   <Route path="courses/:id" element={<CourseEditor />} />
                   <Route path="students" element={<AdminStudents />} />
                   <Route path="services" element={<AdminServices />} />
+                  <Route path="clients" element={<AdminClients />} />
+                  <Route path="time" element={<AdminTime />} />
                   <Route path="orders" element={<AdminOrders />} />
                   <Route path="coupons" element={<AdminCoupons />} />
                   <Route path="products" element={<AdminProducts />} />

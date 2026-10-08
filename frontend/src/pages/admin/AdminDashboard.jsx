@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { DollarSign, Users, BookOpen, RotateCcw, AlertTriangle, TrendingUp } from "lucide-react";
+import { DollarSign, Users, BookOpen, RotateCcw, AlertTriangle, TrendingUp, Timer } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
 import { api, fmt, fmtDate } from "@/lib/api";
 import { Spinner } from "@/components/Shared";
@@ -8,7 +8,8 @@ import { AdminHeader, Table } from "./AdminLayout";
 
 export default function AdminDashboard() {
   const [d, setD] = useState(null);
-  useEffect(() => { api.get("/admin/dashboard").then((r) => setD(r.data)); }, []);
+  const [hw, setHw] = useState(null);
+  useEffect(() => { api.get("/admin/dashboard").then((r) => setD(r.data)); api.get("/admin/time/hours-week").then((r) => setHw(r.data)).catch(() => {}); }, []);
   if (!d) return <Spinner />;
 
   const stats = [
@@ -16,8 +17,8 @@ export default function AdminDashboard() {
     { label: "Active students", value: d.active_students, icon: Users, sub: `${d.students} registered` },
     { label: "At risk", value: d.at_risk_students, icon: AlertTriangle, sub: "no activity 7+ days" },
     { label: "Avg completion", value: `${d.avg_completion}%`, icon: TrendingUp, sub: "across enrolled" },
+    { label: "Hours this week", value: hw ? `${(hw.client + hw.student + hw.internal).toFixed(1)}h` : "—", icon: Timer, sub: hw ? `${hw.client}h clients · ${hw.student}h students` : "" },
     { label: "Courses", value: d.published_courses, icon: BookOpen, sub: `${d.courses} total` },
-    { label: "Refunded", value: fmt(d.refunded), icon: RotateCcw, sub: "lifetime" },
   ];
 
   return (

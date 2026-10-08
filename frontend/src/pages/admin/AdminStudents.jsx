@@ -50,7 +50,7 @@ export default function AdminStudents() {
 
       <div className="flex gap-2 mb-4"><Filter id="all" label="All" /><Filter id="active" label="Active" /><Filter id="at_risk" label="At risk" /><Filter id="completed" label="Completed" /></div>
 
-      <Table cols={["Student", "Joined", "Courses", "Progress", "Lessons", "Last active", "Spent", "Devices", "Status"]} rows={shown} testId="students-table"
+      <Table cols={["Student", "Joined", "Courses", "Progress", "Lessons", "Last active", "Coach time", "Spent", "Devices", "Status"]} rows={shown} testId="students-table"
         render={(u) => (
           <tr key={u.id} onClick={() => openStudent(u)} className="cursor-pointer hover:bg-stone-50" data-testid={`student-row-${u.id}`}>
             <td className="px-4 py-3"><div className="font-medium">{u.name}</div><div className="text-xs text-slate-500">{u.email}</div></td>
@@ -59,6 +59,7 @@ export default function AdminStudents() {
             <td className="px-4 py-3"><Bar pct={u.progress_percent || 0} /></td>
             <td className="px-4 py-3">{u.lessons_completed || 0}</td>
             <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{u.last_active ? fmtDate(u.last_active) : "—"}</td>
+            <td className="px-4 py-3">{((u.coach_minutes || 0) / 60).toFixed(1)}h</td>
             <td className="px-4 py-3">{fmt(u.spent)}</td>
             <td className="px-4 py-3">{u.sessions}/2</td>
             <td className="px-4 py-3"><StatusBadge s={u.status} /></td>

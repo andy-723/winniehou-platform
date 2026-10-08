@@ -1,12 +1,15 @@
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Users, Receipt, Ticket, Package, Newspaper, ExternalLink, HeartHandshake } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, Receipt, Ticket, Package, Newspaper, ExternalLink, HeartHandshake, UserCog, Timer } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import TimerBar from "@/components/TimerBar";
 
 const items = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/admin/courses", label: "Courses", icon: BookOpen },
   { to: "/admin/services", label: "Services", icon: HeartHandshake },
   { to: "/admin/students", label: "Students", icon: Users },
+  { to: "/admin/clients", label: "Clients", icon: UserCog },
+  { to: "/admin/time", label: "Time", icon: Timer },
   { to: "/admin/orders", label: "Orders & refunds", icon: Receipt },
   { to: "/admin/coupons", label: "Coupons", icon: Ticket },
   { to: "/admin/products", label: "Shop products", icon: Package },
@@ -39,7 +42,7 @@ export default function AdminLayout() {
           </div>
         </div>
       </aside>
-      <main className="flex-1 min-w-0 p-8 lg:p-12"><Outlet /></main>
+      <main className="flex-1 min-w-0 flex flex-col"><TimerBar /><div className="p-8 lg:p-12 flex-1"><Outlet /></div></main>
     </div>
   );
 }

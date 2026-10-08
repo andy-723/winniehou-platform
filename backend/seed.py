@@ -165,6 +165,22 @@ async def seed_services():
             upsert=True)
 
 
+TIME_CATEGORIES = {
+    "client": ["Coaching session", "CDP preparation", "Resume / LinkedIn review", "Mock interview", "Job search support", "Email / admin"],
+    "student": ["Written activity review", "Q&A / support", "Live class", "Course admin"],
+    "internal": ["Content creation", "Marketing", "Business admin"],
+}
+
+
+async def seed_time():
+    await db.service_packages.update_one({"key": "business-english-quantum-leap"}, {"$set": {"hours_included": 12}})
+    await db.service_packages.update_many({"hours_included": {"$exists": False}}, {"$set": {"hours_included": None}})
+    for st, names in TIME_CATEGORIES.items():
+        for i, n in enumerate(names):
+            await db.time_categories.update_one({"subject_type": st, "name": n},
+                                                {"$setOnInsert": {"id": new_id(), "subject_type": st, "name": n, "order": i}}, upsert=True)
+
+
 async def ensure_indexes():
     await db.users.create_index("email", unique=True)
     await db.users.create_index("id", unique=True)
@@ -182,3 +198,9 @@ async def ensure_indexes():
     await db.password_reset_tokens.create_index("expires_at", expireAfterSeconds=0)
     await db.login_attempts.create_index("identifier")
     await db.service_packages.create_index("key", unique=True)
+    await db.coaching_clients.create_index("id", unique=True)
+    await db.client_engagements.create_index("client_id")
+    await db.time_entries.create_index("user_id")
+    await db.time_entries.create_index("client_id")
+    await db.time_entries.create_index("student_id")
+    await db.time_categories.create_index([("subject_type", 1), ("name", 1)], unique=True)

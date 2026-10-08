@@ -278,6 +278,7 @@ async def students(q: Optional[str] = None):
         u["lessons_completed"] = m["lessons_completed"]
         u["last_active"] = m["last_active"]
         u["status"] = m["status"]
+        u["coach_minutes"] = sum(e.get("duration_minutes", 0) for e in await db.time_entries.find({"student_id": u["id"], "ended_at": {"$ne": None}}, {"_id": 0, "duration_minutes": 1}).to_list(2000))
     return rows
 
 
