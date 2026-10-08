@@ -1,0 +1,28 @@
+{
+  "summary": "Comprehensive backend+frontend testing of Winnie Hou LMS. 21 pytest cases cover auth/sessions/courses/filters/preview locking/coupon/Stripe checkout session/admin grant+progress flow/admin CRUD (courses, coupons, products, posts, orders)/Bunny 503/PDF upload+access gating. All 21 backend tests PASS. Frontend Playwright covered home/catalog filter chips, student login+dashboard tabs, course detail with Free preview+Add to cart, preview player with <video> + watermark overlay, cart with LAUNCH20 coupon showing discount line, checkout button successfully redirects to https://checkout.stripe.com. Admin login redirects to /admin dashboard (Revenue/Students/Courses stats + Top courses + Recent orders table), New course creates draft and opens editor at /admin/courses/{id}, add-module-btn + save-course-btn work, 'Saved' toast appears, Publish toggle present, Coupons page has new-coupon-btn, Students page shows rows. Everything is working end-to-end.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "payments.py line 15: tax_mode is a module-level literal 'full' with no toggle via env — fine for now but should be configurable.",
+    "core.py get_optional_user swallows ALL HTTPExceptions, incl. 403 'Account disabled'. Harmless for current endpoints but could mask disabled-user issues in anonymous-tolerant routes.",
+    "auth.py login_attempts: counter uses $inc + always resets locked_until to +15min on every failure; after reaching 5 it locks correctly, but there's no reset-on-success window — a user who ever had 5 fails is locked until window passes even after one success elsewhere (minor).",
+    "content.py serve_file: product scope requires product_id but no 404 if product_id is empty — relies on product_access lookup returning None.",
+    "courses.py bunny_embed_url uses hashlib token which is not Bunny's signed URL spec — will not actually auth with Bunny when configured. Document when wiring Bunny.",
+    "No rate limit on /api/payments/validate-coupon (open to brute force of coupon codes).",
+    "Admin router: PATCH /coupons/{id} takes `active` as query param, not JSON body — frontend must send as query string; works but inconsistent with other endpoints."
+  ],
+  "updated_files": ["/app/backend/tests/__init__.py", "/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100% (21/21)", "frontend": "100% of flows tested"},
+  "test_credentials": "Admin andrew.phan723@gmail.com / WinnieAdmin2026!; Student student@example.com / Student123!; Coupon LAUNCH20",
+  "seed_data_creation": "None manual. Startup seeds 4 courses, 3 products, 2 posts, LAUNCH20 coupon, demo student, admin.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "backend_test.py is pytest-based; use REACT_APP_BACKEND_URL env (defaults to current preview URL). All seeded 4 courses have at least one is_preview=true lesson in module 1. Checkout always returns Stripe URL even for one course (prices non-zero). To avoid '409 already enrolled' when buying, use a fresh registered user. Admin PATCH /api/admin/coupons/{id} uses ?active=... as query. Full purchase e2e uses admin grant_course_id instead of real Stripe to avoid real payments.",
+  "rca of the issue": "N/A — no issues found."
+}
