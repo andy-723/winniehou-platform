@@ -1,0 +1,25 @@
+{
+  "summary": "Admin Reports page (/admin/reports) fully verified end-to-end via Playwright. Login as admin succeeds, sidebar 'Reports' nav (data-testid=admin-nav-reports) is present and navigates correctly, admin-reports container renders, TimerBar is present at top of the page. All 5 summary cards render with expected labels and values (Total hours 0.1h / Billable 0.1h / Non-billable 0h / Package revenue A$3,900.00 / Clients 1 Students 1). Recharts stacked BarChart (report-bar) and donut PieChart (report-donut) render SVGs. All 5 preset buttons click & reload data; Custom reveals From/To date inputs (both visible, editable). Subject filter All/Clients/Students reloads report. Clients table shows client/package/revenue/hours/billable/effective $/h with correct AUD formatting (Joe Doe · Interview for Success, Career Coaching Essentials · A$3,900.00 · 0.15h · 0.15h · A$26,000.00 effective — not red since well above $100/h threshold). Students table renders. All three export buttons trigger GET /api/admin/time/reports/export with correct format param, returning HTTP 200 with correct Content-Types (application/pdf, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet) and a file download (time-report.pdf / .csv / .xlsx). Zero error toasts throughout.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/admin/reports", "issues": ["Minor recharts console warnings 'The width(-1) and height(-1) of chart should be greater than 0' during initial mount/preset switches — purely a cosmetic console noise from ResponsiveContainer transient layout; charts render correctly."]}
+    ]
+  },
+  "test_report_links": ["/app/test_reports/iteration_6.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "AdminReports.jsx line 29/30: when range or subject change, old data is immediately set to null causing a full-page <Spinner /> flash (loses chart/filter context). Consider keeping prior data while fetching to avoid flicker.",
+    "Download anchor created in download() is not appended to document.body before click — works in Chromium but is fragile in Firefox/WebKit; also no revoke failure handling. Minor.",
+    "Effective rate red threshold is hard-coded (<100). Consider pulling from a config/env so admin can tune without redeploy."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (prev iter)", "frontend": "100%"},
+  "test_credentials": "andrew.phan723@gmail.com / WinnieAdmin2026! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "None — used existing seeded Joe Doe client + 1 student with 0.15h logged.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Reports page verified. One side-note observation: counting tbody tr for empty-filter states is ambiguous because empty state is a single tr with colSpan — if asserting empty-state in future, use the specific 'No client/student time' text instead of row count. Student with display name 'ne' exists in seed data (short/truncated name)."
+}

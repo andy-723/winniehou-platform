@@ -24,10 +24,11 @@ export default function AdminReports() {
   const [range, setRange] = useState(presetRange("this-month"));
   const [subject, setSubject] = useState("all");
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState("");
 
   const params = () => ({ date_from: range.from || undefined, date_to: range.to || undefined, subject_type: subject === "all" ? undefined : subject });
-  const load = () => { setData(null); api.get("/admin/time/reports", { params: params() }).then((r) => setData(r.data)).catch((e) => toast.error(errMsg(e))); };
+  const load = () => { setLoading(true); api.get("/admin/time/reports", { params: params() }).then((r) => setData(r.data)).catch((e) => toast.error(errMsg(e))).finally(() => setLoading(false)); };
   useEffect(() => { load(); }, [range, subject]); // eslint-disable-line
 
   const choosePreset = (p) => { setPreset(p); if (p !== "custom") setRange(presetRange(p)); };
@@ -38,7 +39,8 @@ export default function AdminReports() {
       const res = await api.get("/admin/time/reports/export", { params: { ...params(), format }, responseType: "blob" });
       const url = URL.createObjectURL(res.data);
       const a = document.createElement("a");
-      a.href = url; a.download = `time-report.${format === "xlsx" ? "xlsx" : format}`; a.click();
+      a.href = url; a.download = `time-report.${format === "xlsx" ? "xlsx" : format}`;
+      document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
     } catch (e) { toast.error(errMsg(e)); } finally { setBusy(""); }
   };
@@ -59,7 +61,8 @@ export default function AdminReports() {
   return (
     <div data-testid="admin-reports">
       <AdminHeader title="Reports" sub="Hours, billable split and profitability across clients and students" right={
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {loading && <span className="text-xs text-slate-400" data-testid="report-loading">Updating…</span>}
           <button onClick={() => download("pdf")} disabled={busy} className="btn-outline !py-2 !text-sm disabled:opacity-50" data-testid="export-pdf"><FileText size={15} /> PDF</button>
           <button onClick={() => download("csv")} disabled={busy} className="btn-outline !py-2 !text-sm disabled:opacity-50" data-testid="export-csv"><FileDown size={15} /> CSV</button>
           <button onClick={() => download("xlsx")} disabled={busy} className="btn-outline !py-2 !text-sm disabled:opacity-50" data-testid="export-xlsx"><FileSpreadsheet size={15} /> XLS</button>

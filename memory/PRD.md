@@ -61,6 +61,13 @@ Premium LMS + e-commerce for working professionals: course catalog, Stripe one-t
 
 ## Backlog / Roadmap
 
+### Admin Reports — Toggl-style time visualization (2026-10-08)
+- New admin page `/admin/reports` (sidebar "Reports", `AdminReports.jsx`) using recharts.
+- Backend `routers/timetrack.py`: `GET /api/admin/time/reports` (totals incl. package revenue_cents, daily billable/non-billable series, by_client with hours+billable+effective $/h, by_student with reconnect-session count, detailed rows) + `GET /api/admin/time/reports/export?format=csv|xlsx|pdf`. XLSX via pandas+openpyxl (Summary/Clients/Students/Entries sheets); PDF via reportlab (navy/gold branded tables). Added deps: openpyxl, reportlab.
+- UI: date-range presets (this week/this month/last month/last 30/custom) + subject filter (all/clients/students); summary cards; stacked billable-vs-non-billable bar chart; hours-by-client donut; Clients table (revenue, hours, effective $/h — red when <$100/h) vs Students table (reconnect sessions ~30-45 min). Export buttons PDF/CSV/XLS.
+- $ model = fixed-fee package revenue + effective $/hour (price ÷ hours), per Andrew's decision (not hourly billing).
+- Tested iteration_6: backend verified via curl (valid CSV/XLSX/PDF files); frontend 100% (all flows, charts, exports, filters). No bugs.
+
 ### Legal pages — Terms, Privacy, Disclaimer (2026-10-08)
 - Implemented per Andrew's `Better_Careers_Terms_and_Conditions_DRAFT.md` (static content, DRAFT with [bracketed] placeholders kept for lawyer/Winnie to fill).
 - Content source: `frontend/src/lib/legalContent.js` (TERMS_PARTS A–D, DISCLAIMER + short version, PRIVACY + sharing table, `TERMS_ACCEPT_VERSION`). Pages: `frontend/src/pages/Legal.jsx` → `/terms` (jump-nav + anchors #website/#coaching/#students/#shop), `/privacy` (APP policy + overseas-sharing table), `/disclaimer`. Dark "velvet-rope" theme, draft banner, no overflow (desktop+mobile verified).
