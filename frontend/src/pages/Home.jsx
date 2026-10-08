@@ -8,7 +8,7 @@ const HERO = "https://images.unsplash.com/photo-1637589267610-6c66fc2a086b?crop=
 
 const pillars = [
   { icon: MonitorPlay, title: "Self-paced video", text: "Short, cinematic lessons you can finish between meetings. Progress saves automatically." },
-  { icon: Award, title: "Executive-grade material", text: "Built from real boardroom transcripts and a decade of coaching Fortune 500 leaders." },
+  { icon: Award, title: "Executive-grade material", text: "Built from real coaching experience and practical business scenarios. [DETAILS TO CONFIRM]" },
   { icon: Globe2, title: "Made for global professionals", text: "Culture-aware guidance for teams spanning Asia, Europe and the Americas." },
 ];
 
@@ -33,7 +33,7 @@ export default function Home() {
               <Link to="/shop" className="btn-outline !bg-transparent !text-white !border-white/30 hover:!bg-white/5" data-testid="hero-shop">Explore workbooks</Link>
             </div>
             <div className="flex gap-10 mt-14 text-sm rise rise-4">
-              {[["2,400+", "Professionals coached"], ["38", "Countries"], ["4.9★", "Average rating"]].map(([n, l]) => (
+              {[["[TBC]", "Professionals coached"], ["[TBC]", "Countries"], ["[TBC]", "Average rating"]].map(([n, l]) => (
                 <div key={l}><div className="font-serif text-3xl text-amber-300">{n}</div><div className="text-slate-400 text-xs mt-1 uppercase tracking-wider">{l}</div></div>
               ))}
             </div>
@@ -43,8 +43,8 @@ export default function Home() {
             <img src={HERO} alt="Winnie Hou coaching" className="relative rounded-2xl shadow-2xl aspect-[4/5] object-cover w-full" />
             <div className="absolute -bottom-6 -left-6 bg-white text-[#0A192F] p-5 rounded-xl shadow-xl max-w-[240px]">
               <Quote size={18} className="text-amber-500 mb-2" />
-              <p className="text-sm leading-snug italic font-serif">"I closed my first US deal in English three weeks after finishing the course."</p>
-              <div className="text-xs text-slate-500 mt-2">— Mei L., Director of Sales</div>
+              <p className="text-sm leading-snug italic font-serif">"[CLIENT TESTIMONIAL TO CONFIRM]"</p>
+              <div className="text-xs text-slate-500 mt-2">— [CLIENT NAME & ROLE TO CONFIRM]</div>
             </div>
           </div>
         </div>
@@ -79,12 +79,21 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-8">
             <div className="eyebrow !text-amber-400 mb-4">About your coach</div>
-            <h2 className="font-serif text-3xl sm:text-4xl leading-snug">Winnie Hou has spent twelve years teaching executives to be heard.</h2>
-            <p className="text-slate-300 mt-6 leading-relaxed max-w-2xl">Former corporate trainer for multinational banks and tech firms, Winnie now distils that experience into focused, practical online courses. Every lesson is designed for busy people: no fluff, no grammar drills, only the language that moves careers.</p>
+            <h2 className="font-serif text-3xl sm:text-4xl leading-snug">Winnie Hou has spent [X YEARS TO CONFIRM] helping professionals be heard.</h2>
+            <p className="text-slate-300 mt-6 leading-relaxed max-w-2xl">[WINNIE BIO — TO CONFIRM]. Every lesson is designed for busy people: no fluff, no grammar drills, only the language that moves careers.</p>
           </div>
           <div className="lg:col-span-4 lg:text-right">
-            <Link to="/courses" className="btn-gold" data-testid="about-cta">Find your course</Link>
+            <Link to="/about" className="btn-gold" data-testid="about-cta">Meet Winnie</Link>
           </div>
+        </div>
+      </section>
+
+      <section className="bg-[#0A192F] text-white">
+        <div className="max-w-7xl mx-auto px-6 py-16 text-center">
+          <div className="eyebrow !text-amber-400 mb-3">Coaching</div>
+          <h2 className="font-serif text-3xl sm:text-4xl">Work with Winnie one-to-one.</h2>
+          <p className="text-slate-300 mt-4 max-w-xl mx-auto">Personalised coaching packages for career growth, interviews and executive communication.</p>
+          <Link to="/services" className="btn-gold mt-8 inline-flex" data-testid="home-services-cta">Explore coaching <ArrowRight size={16} /></Link>
         </div>
       </section>
     </div>

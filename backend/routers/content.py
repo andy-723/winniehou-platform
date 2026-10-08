@@ -1,6 +1,7 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Header, Query, Response
-from core import db, get_optional_user, has_course_access, get_object
+from pydantic import BaseModel
+from core import db, get_optional_user, has_course_access, get_object, new_id, now_iso
 import jwt
 from core import JWT_SECRET, JWT_ALG
 
@@ -37,6 +38,44 @@ async def post_detail(slug: str):
 async def public_settings():
     s = await db.settings.find_one({"key": "site"}, {"_id": 0}) or {}
     return s.get("value", {})
+
+
+# ---------- services ----------
+@router.get("/services")
+async def list_services():
+    return await db.service_packages.find({"status": "published"}, {"_id": 0}).sort("sort_order", 1).to_list(100)
+
+
+class EnquiryIn(BaseModel):
+    name: str
+    email: str
+    phone: str = ""
+    package: str = ""
+    message: str = ""
+    consent: bool = False
+    type: str = "service"
+
+
+@router.post("/service-enquiries")
+async def create_enquiry(body: EnquiryIn):
+    if not body.consent:
+        raise HTTPException(400, "Consent is required")
+    doc = {**body.model_dump(), "id": new_id(), "contacted": False, "created_at": now_iso()}
+    await db.service_enquiries.insert_one(doc)
+    return {"ok": True}
+
+
+class WaitlistIn(BaseModel):
+    name: str
+    email: str
+    source: str = "1on1"
+
+
+@router.post("/waitlist")
+async def join_waitlist(body: WaitlistIn):
+    doc = {**body.model_dump(), "id": new_id(), "created_at": now_iso()}
+    await db.waitlist.insert_one(doc)
+    return {"ok": True}
 
 
 async def _user_from_query(auth: Optional[str]) -> Optional[dict]:

@@ -3,11 +3,15 @@ import { ShoppingBag, LogOut, LayoutDashboard, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import { PUBLIC_PRICING } from "@/lib/config";
 
 const links = [
+  { to: "/about", label: "About" },
   { to: "/courses", label: "Courses" },
+  { to: "/services", label: "Services" },
   { to: "/shop", label: "Shop" },
   { to: "/blog", label: "Blog" },
+  { to: "/contact", label: "Contact" },
 ];
 
 export const Navbar = () => {
@@ -32,12 +36,14 @@ export const Navbar = () => {
           {user && <NavLink to="/dashboard" className={cls} data-testid="nav-my-learning">My Learning</NavLink>}
         </nav>
         <div className="flex items-center gap-3">
-          <Link to="/cart" data-testid="nav-cart" className="relative p-2 rounded-lg hover:bg-white/5 transition-colors">
-            <ShoppingBag size={18} />
-            {count > 0 && (
-              <span data-testid="nav-cart-count" className="absolute -top-0.5 -right-0.5 bg-amber-500 text-[#0A192F] text-[10px] font-bold rounded-full w-4.5 h-4.5 min-w-[18px] px-1 flex items-center justify-center">{count}</span>
-            )}
-          </Link>
+          {PUBLIC_PRICING && (
+            <Link to="/cart" data-testid="nav-cart" className="relative p-2 rounded-lg hover:bg-white/5 transition-colors">
+              <ShoppingBag size={18} />
+              {count > 0 && (
+                <span data-testid="nav-cart-count" className="absolute -top-0.5 -right-0.5 bg-amber-500 text-[#0A192F] text-[10px] font-bold rounded-full w-4.5 h-4.5 min-w-[18px] px-1 flex items-center justify-center">{count}</span>
+              )}
+            </Link>
+          )}
           {isAdmin && (
             <Link to="/admin" data-testid="nav-admin" className="hidden md:inline-flex items-center gap-1.5 text-xs border border-amber-500/40 text-amber-300 px-3 py-1.5 rounded-lg hover:bg-amber-500/10 transition-colors">
               <LayoutDashboard size={14} /> Admin
@@ -75,11 +81,14 @@ export const Footer = () => (
         <p className="text-sm leading-relaxed max-w-sm">Business English mastery for ambitious professionals. Self-paced video courses, practical workbooks, and the language of leadership.</p>
       </div>
       <div className="md:col-span-3">
-        <div className="eyebrow mb-4">Learn</div>
+        <div className="eyebrow mb-4">Explore</div>
         <ul className="space-y-2 text-sm">
+          <li><Link to="/about" className="hover:text-white transition-colors">About Winnie</Link></li>
           <li><Link to="/courses" className="hover:text-white transition-colors">All courses</Link></li>
+          <li><Link to="/services" className="hover:text-white transition-colors">Coaching services</Link></li>
           <li><Link to="/shop" className="hover:text-white transition-colors">Workbooks</Link></li>
           <li><Link to="/blog" className="hover:text-white transition-colors">Blog & announcements</Link></li>
+          <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
         </ul>
       </div>
       <div className="md:col-span-4">

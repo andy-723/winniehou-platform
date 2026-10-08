@@ -6,6 +6,9 @@ import { CartProvider } from "@/context/CartContext";
 import { Navbar, Footer } from "@/components/Layout";
 import { Spinner } from "@/components/Shared";
 import Home from "@/pages/Home";
+import About from "@/pages/About";
+import Services from "@/pages/Services";
+import Contact from "@/pages/Contact";
 import Catalog from "@/pages/Catalog";
 import CourseDetail from "@/pages/CourseDetail";
 import Player from "@/pages/Player";
@@ -20,6 +23,7 @@ import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminCourses from "@/pages/admin/AdminCourses";
 import CourseEditor from "@/pages/admin/CourseEditor";
 import AdminStudents from "@/pages/admin/AdminStudents";
+import AdminServices from "@/pages/admin/AdminServices";
 import AdminOrders from "@/pages/admin/AdminOrders";
 import AdminCoupons from "@/pages/admin/AdminCoupons";
 import AdminProducts from "@/pages/admin/AdminProducts";
@@ -51,6 +55,9 @@ export default function App() {
             <Routes>
               <Route element={<Public />}>
                 <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="/courses" element={<Catalog />} />
                 <Route path="/courses/:slug" element={<CourseDetail />} />
                 <Route path="/shop" element={<Shop />} />
@@ -75,6 +82,7 @@ export default function App() {
                   <Route path="courses" element={<AdminCourses />} />
                   <Route path="courses/:id" element={<CourseEditor />} />
                   <Route path="students" element={<AdminStudents />} />
+                  <Route path="services" element={<AdminServices />} />
                   <Route path="orders" element={<AdminOrders />} />
                   <Route path="coupons" element={<AdminCoupons />} />
                   <Route path="products" element={<AdminProducts />} />

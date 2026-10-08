@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { ShoppingBag, Check, FileDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ShoppingBag, Check, FileDown, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { api, fmt } from "@/lib/api";
 import { useCart } from "@/context/CartContext";
 import { Spinner, PageHeader, Empty } from "@/components/Shared";
+import { PUBLIC_PRICING } from "@/lib/config";
 
 export default function Shop() {
   const [products, setProducts] = useState(null);
@@ -30,11 +32,19 @@ export default function Shop() {
                 <h3 className="font-serif text-xl text-[#0A192F]">{p.title}</h3>
                 <p className="text-sm text-slate-500 mt-2 flex-1 leading-relaxed">{p.description}</p>
                 <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
-                  <span className="font-serif text-2xl text-[#0A192F]">{fmt(p.price)}</span>
-                  <button onClick={() => add(p)} disabled={cart.has(p.id)} data-testid={`add-product-${p.id}`}
-                    className="btn-navy !py-2 !px-4 !text-sm disabled:opacity-50">
-                    {cart.has(p.id) ? <><Check size={14} /> In cart</> : <><ShoppingBag size={14} /> Add</>}
-                  </button>
+                  {PUBLIC_PRICING ? (
+                    <>
+                      <span className="font-serif text-2xl text-[#0A192F]">{fmt(p.price)}</span>
+                      <button onClick={() => add(p)} disabled={cart.has(p.id)} data-testid={`add-product-${p.id}`}
+                        className="btn-navy !py-2 !px-4 !text-sm disabled:opacity-50">
+                        {cart.has(p.id) ? <><Check size={14} /> In cart</> : <><ShoppingBag size={14} /> Add</>}
+                      </button>
+                    </>
+                  ) : (
+                    <Link to={`/contact?subject=${encodeURIComponent(p.title)}`} className="btn-navy !py-2 !px-4 !text-sm ml-auto" data-testid={`enquire-product-${p.id}`}>
+                      <Mail size={14} /> Enquire
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>

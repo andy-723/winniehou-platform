@@ -1,10 +1,11 @@
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Users, Receipt, Ticket, Package, Newspaper, ExternalLink } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, Receipt, Ticket, Package, Newspaper, ExternalLink, HeartHandshake } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const items = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/admin/courses", label: "Courses", icon: BookOpen },
+  { to: "/admin/services", label: "Services", icon: HeartHandshake },
   { to: "/admin/students", label: "Students", icon: Users },
   { to: "/admin/orders", label: "Orders & refunds", icon: Receipt },
   { to: "/admin/coupons", label: "Coupons", icon: Ticket },

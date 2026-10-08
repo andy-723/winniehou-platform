@@ -4,7 +4,7 @@ import logging
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from routers import auth, courses, payments, content, admin
-from seed import seed_admin, seed_demo, ensure_indexes
+from seed import seed_admin, seed_demo, seed_services, ensure_indexes
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -37,6 +37,7 @@ async def startup():
     await ensure_indexes()
     await seed_admin()
     await seed_demo()
+    await seed_services()
     try:
         init_storage()
         logger.info("Object storage initialized")

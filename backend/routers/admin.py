@@ -374,3 +374,66 @@ async def update_post(post_id: str, body: PostIn):
 async def delete_post(post_id: str):
     await db.posts.delete_one({"id": post_id})
     return {"ok": True}
+
+
+# ---------- services ----------
+class ServicePackageIn(BaseModel):
+    key: str
+    name: str
+    tagline: str = ""
+    description: str = ""
+    inclusions: List[str] = []
+    duration_label: str = ""
+    price_cents: int = 0
+    gst_treatment: str = "ex_gst"
+    sort_order: int = 0
+    status: str = "draft"
+    cta_type: str = "enquire"
+
+
+@router.get("/services")
+async def admin_services():
+    return await db.service_packages.find({}, NO_ID).sort("sort_order", 1).to_list(200)
+
+
+@router.post("/services")
+async def create_service(body: ServicePackageIn):
+    key = slugify(body.key or body.name)
+    if await db.service_packages.find_one({"key": key}):
+        raise HTTPException(400, "A package with this key already exists")
+    doc = {**body.model_dump(), "key": key, "id": new_id(), "currency": "AUD",
+           "created_at": now_iso(), "updated_at": now_iso()}
+    await db.service_packages.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+@router.put("/services/{sid}")
+async def update_service(sid: str, body: ServicePackageIn):
+    doc = {**body.model_dump(), "key": slugify(body.key or body.name), "updated_at": now_iso()}
+    res = await db.service_packages.update_one({"id": sid}, {"$set": doc})
+    if not res.matched_count:
+        raise HTTPException(404, "Package not found")
+    return await db.service_packages.find_one({"id": sid}, NO_ID)
+
+
+@router.delete("/services/{sid}")
+async def delete_service(sid: str):
+    await db.service_packages.delete_one({"id": sid})
+    return {"ok": True}
+
+
+@router.get("/service-enquiries")
+async def admin_service_enquiries():
+    return await db.service_enquiries.find({}, NO_ID).sort("created_at", -1).to_list(1000)
+
+
+@router.patch("/service-enquiries/{eid}")
+async def mark_enquiry(eid: str, contacted: bool = True):
+    await db.service_enquiries.update_one({"id": eid}, {"$set": {"contacted": contacted}})
+    return {"ok": True}
+
+
+@router.get("/waitlist")
+async def admin_waitlist():
+    return await db.waitlist.find({}, NO_ID).sort("created_at", -1).to_list(1000)

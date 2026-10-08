@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Clock, PlayCircle } from "lucide-react";
 import { fmt } from "@/lib/api";
+import { PUBLIC_PRICING } from "@/lib/config";
 
 export const CourseCard = ({ course, delay = 0 }) => (
   <Link to={`/courses/${course.slug}`} data-testid={`course-card-${course.slug}`}
@@ -10,7 +11,7 @@ export const CourseCard = ({ course, delay = 0 }) => (
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0A192F]/80 via-transparent to-transparent" />
       <span className="absolute top-3 left-3 navy-badge">{course.level}</span>
-      <span className="absolute bottom-3 right-3 font-serif text-2xl text-amber-300">{fmt(course.price)}</span>
+      {PUBLIC_PRICING && <span className="absolute bottom-3 right-3 font-serif text-2xl text-amber-300">{fmt(course.price)}</span>}
     </div>
     <div className="p-6 flex flex-col flex-1">
       <div className="flex flex-wrap gap-2 mb-3">

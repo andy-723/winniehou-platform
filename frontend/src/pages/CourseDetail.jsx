@@ -6,6 +6,7 @@ import { api, fmt, errMsg } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { Spinner } from "@/components/Shared";
+import { PUBLIC_PRICING } from "@/lib/config";
 
 export default function CourseDetail() {
   const { slug } = useParams();
@@ -61,17 +62,25 @@ export default function CourseDetail() {
           </div>
           <div className="lg:col-span-4">
             <div className="bg-white text-[#0A192F] rounded-xl p-7 shadow-2xl lg:-mb-32 relative" data-testid="enroll-card">
-              <div className="font-serif text-4xl" data-testid="course-price">{fmt(course.price)}</div>
-              <div className="text-xs text-slate-500 mt-1">One-time payment · lifetime access</div>
+              {PUBLIC_PRICING ? (
+                <>
+                  <div className="font-serif text-4xl" data-testid="course-price">{fmt(course.price)}</div>
+                  <div className="text-xs text-slate-500 mt-1">One-time payment · lifetime access</div>
+                </>
+              ) : (
+                <div className="font-serif text-2xl" data-testid="course-price">Enquire for pricing</div>
+              )}
               {course.enrolled ? (
                 <Link to={`/learn/${course.slug}`} className="btn-gold w-full mt-6" data-testid="continue-learning-btn">Continue learning</Link>
-              ) : (
+              ) : PUBLIC_PRICING ? (
                 <>
                   <button onClick={enroll} disabled={busy} className="btn-gold w-full mt-6 disabled:opacity-60" data-testid="enroll-btn">{busy ? "Redirecting…" : "Enrol now"}</button>
                   <button onClick={addToCart} disabled={cart.has(course.id)} className="btn-outline w-full mt-3 disabled:opacity-50" data-testid="add-to-cart-btn">
                     <ShoppingBag size={15} /> {cart.has(course.id) ? "In cart" : "Add to cart"}
                   </button>
                 </>
+              ) : (
+                <Link to={`/contact?subject=${encodeURIComponent(course.title)}`} className="btn-gold w-full mt-6" data-testid="course-enquire-btn">Enquire about this course</Link>
               )}
               <ul className="mt-6 space-y-2 text-sm text-slate-600">
                 {["HD video lessons", "Downloadable PDFs & templates", "Progress tracking & resume", "Access on 2 devices"].map((x) => (

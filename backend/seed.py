@@ -109,6 +109,17 @@ POSTS = [
      "content": "<p>I'm thrilled to announce the launch of <strong>Negotiation English for Deal-Makers</strong>. Over the past year I collected transcripts (anonymised, with permission) from real negotiations and distilled the patterns into six practical modules.</p><p>Enrol this month and use code <strong>LAUNCH20</strong> for 20% off.</p>"},
 ]
 
+SERVICE_PACKAGES = [
+    {"key": "career-coaching-essentials", "name": "Career Coaching Essentials", "tagline": "[TAGLINE TO COME]",
+     "price_cents": 195000, "gst_treatment": "ex_gst", "sort_order": 1, "cta_type": "book_call"},
+    {"key": "interview-for-success", "name": "Interview for Success", "tagline": "[TAGLINE TO COME]",
+     "price_cents": 195000, "gst_treatment": "ex_gst", "sort_order": 2, "cta_type": "book_call"},
+    {"key": "bundle", "name": "Career Coaching + Interview Bundle", "tagline": "Best value",
+     "price_cents": 390000, "gst_treatment": "ex_gst", "sort_order": 3, "cta_type": "book_call"},
+    {"key": "business-english-quantum-leap", "name": "Business English Quantum Leap", "tagline": "[TAGLINE TO COME]",
+     "price_cents": 385000, "gst_treatment": "inc_gst", "sort_order": 4, "cta_type": "enquire"},
+]
+
 
 async def seed_admin():
     email = os.environ["ADMIN_EMAIL"].lower()
@@ -144,6 +155,16 @@ async def seed_demo():
                                    "password_hash": hash_password("Student123!"), "created_at": now_iso(), "disabled": False})
 
 
+async def seed_services():
+    for p in SERVICE_PACKAGES:
+        await db.service_packages.update_one(
+            {"key": p["key"]},
+            {"$setOnInsert": {**p, "id": new_id(), "description": "[DESCRIPTION TO COME]",
+                              "inclusions": ["[INCLUSIONS TO COME]"], "duration_label": "", "status": "published",
+                              "currency": "AUD", "created_at": now_iso(), "updated_at": now_iso()}},
+            upsert=True)
+
+
 async def ensure_indexes():
     await db.users.create_index("email", unique=True)
     await db.users.create_index("id", unique=True)
@@ -160,3 +181,4 @@ async def ensure_indexes():
     await db.files.create_index("id", unique=True)
     await db.password_reset_tokens.create_index("expires_at", expireAfterSeconds=0)
     await db.login_attempts.create_index("identifier")
+    await db.service_packages.create_index("key", unique=True)
