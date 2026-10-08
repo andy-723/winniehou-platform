@@ -18,28 +18,30 @@ export default function Contact() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-16" data-testid="contact-page">
-      <PageHeader eyebrow="Contact" title="Get in touch" sub="Questions about courses or coaching? Send a message and we'll reply soon." />
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-7 card-lux p-8">
-          {sent ? (
-            <div className="text-emerald-700" data-testid="contact-success">Thank you — your message has been sent.</div>
-          ) : (
-            <form onSubmit={submit} className="space-y-4">
-              <input className="input-lux" placeholder="Full name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} data-testid="contact-name" />
-              <input className="input-lux" type="email" placeholder="Email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} data-testid="contact-email" />
-              <input className="input-lux" placeholder="Phone (optional)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} data-testid="contact-phone" />
-              <textarea className="input-lux" rows={5} placeholder="Your message" required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} data-testid="contact-message" />
-              <label className="flex items-start gap-2 text-sm text-slate-600"><input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} className="mt-1" data-testid="contact-consent" /> I agree to be contacted about my enquiry.</label>
-              <button className="btn-gold w-full" data-testid="contact-submit">Send message</button>
-            </form>
-          )}
-        </div>
-        <div className="lg:col-span-5">
-          <div className="card-lux p-8 text-center">
-            <div className="eyebrow mb-4">WeChat</div>
-            <div className="aspect-square max-w-[220px] mx-auto rounded-xl bg-stone-100 flex items-center justify-center text-slate-400 text-sm" data-testid="wechat-qr-slot">[WECHAT QR TO COME]</div>
-            <p className="text-sm text-slate-500 mt-4">Scan to connect with Winnie on WeChat.</p>
+    <div className="bg-[#0A192F] min-h-screen" data-testid="contact-page">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <PageHeader eyebrow="Contact" title="Get in touch" sub="Questions about courses or coaching? Send a message and we'll reply soon." />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-7 card-dark p-8">
+            {sent ? (
+              <div className="text-emerald-400" data-testid="contact-success">Thank you — your message has been sent.</div>
+            ) : (
+              <form onSubmit={submit} className="space-y-4">
+                <input className="input-dark" placeholder="Full name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} data-testid="contact-name" />
+                <input className="input-dark" type="email" placeholder="Email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} data-testid="contact-email" />
+                <input className="input-dark" placeholder="Phone (optional)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} data-testid="contact-phone" />
+                <textarea className="input-dark" rows={5} placeholder="Your message" required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} data-testid="contact-message" />
+                <label className="flex items-start gap-2 text-sm text-slate-300"><input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} className="mt-1" data-testid="contact-consent" /> I agree to be contacted about my enquiry.</label>
+                <button className="btn-gold w-full" data-testid="contact-submit">Send message</button>
+              </form>
+            )}
+          </div>
+          <div className="lg:col-span-5">
+            <div className="card-dark p-8 text-center">
+              <div className="eyebrow-dark mb-4">WeChat</div>
+              <div className="aspect-square max-w-[220px] mx-auto rounded-xl bg-[#050E1E] border border-white/10 flex items-center justify-center text-slate-500 text-sm" data-testid="wechat-qr-slot">[WECHAT QR TO COME]</div>
+              <p className="text-sm text-slate-400 mt-4">Scan to connect with Winnie on WeChat.</p>
+            </div>
           </div>
         </div>
       </div>

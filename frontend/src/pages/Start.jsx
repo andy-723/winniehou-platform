@@ -31,7 +31,7 @@ export default function Start() {
   if (pkgs === null) return <Spinner />;
 
   return (
-    <div data-testid="start-page">
+    <div className="bg-[#0A192F] min-h-screen" data-testid="start-page">
       <section className="bg-[#0A192F] text-white">
         <div className="max-w-5xl mx-auto px-6 py-20 text-center">
           <div className="eyebrow !text-amber-400 mb-4">Your personalised plan</div>
@@ -51,16 +51,16 @@ export default function Start() {
             const price = servicePrice(p);
             const best = p.key === "bundle";
             return (
-              <div key={p.id} data-testid={`start-card-${p.key}`} className={`card-lux p-7 flex flex-col relative ${best ? "ring-2 ring-amber-400" : ""}`}>
+              <div key={p.id} data-testid={`start-card-${p.key}`} className={`card-dark p-7 flex flex-col relative transition-[border-color,transform] duration-300 hover:-translate-y-1 ${best ? "!border-amber-400/70" : "hover:border-[#D4AF37]/50"}`}>
                 {best && <span className="absolute -top-3 left-1/2 -translate-x-1/2 gold-badge !bg-amber-500 !text-[#0A192F] !border-amber-500">Best value</span>}
-                <h3 className="font-serif text-xl text-[#0A192F]">{p.name}</h3>
-                {p.tagline && <p className="text-sm text-amber-700 mt-1">{p.tagline}</p>}
+                <h3 className="font-serif text-xl text-[#F9F8F3]">{p.name}</h3>
+                {p.tagline && <p className="text-sm text-amber-400 mt-1">{p.tagline}</p>}
                 <div className="mt-4">
-                  <div className="font-serif text-2xl text-[#0A192F]" data-testid={`start-price-${p.key}`}>{price.main}</div>
-                  {price.sub && <div className="text-xs text-slate-500">{price.sub}</div>}
+                  <div className="font-serif text-2xl text-[#F9F8F3]" data-testid={`start-price-${p.key}`}>{price.main}</div>
+                  {price.sub && <div className="text-xs text-slate-400">{price.sub}</div>}
                 </div>
-                <ul className="mt-5 space-y-2 text-sm text-slate-600 flex-1">
-                  {(p.inclusions || []).map((inc, i) => <li key={i} className="flex gap-2"><Check size={15} className="text-amber-600 shrink-0 mt-0.5" />{inc}</li>)}
+                <ul className="mt-5 space-y-2 text-sm text-slate-300 flex-1">
+                  {(p.inclusions || []).map((inc, i) => <li key={i} className="flex gap-2"><Check size={15} className="text-amber-500 shrink-0 mt-0.5" />{inc}</li>)}
                 </ul>
                 {CALENDLY_URL && <button onClick={book} className="btn-navy w-full mt-6" data-testid={`start-cta-${p.key}`}><Calendar size={15} /> Book a call</button>}
               </div>

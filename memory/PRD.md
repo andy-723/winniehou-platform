@@ -48,8 +48,8 @@ Premium LMS + e-commerce for working professionals: course catalog, Stripe one-t
 
 ### UI redesign — Candace-Owens model (2026-10-08, in progress)
 - Modeled on candaceowens.com (dark premium "velvet-rope", horizontal content carousels with "Explore all", editorial hero, membership CTA band) recoloured to navy #0A192F / gold #D4AF37 / ivory #F9F8F3. Blueprint: `/app/design_guidelines.json`.
-- DONE: design-system utilities in index.css (scrollbar-none, btn-gold-outline, eyebrow-dark, shimmer); new Shared components `CourseCard` (dark), `ContentRow` (carousel), `MembershipBand`; **Home** and **Catalog** fully redesigned. Funnel pricing preserved (no public prices; "Enquire"/POA).
-- TODO (propagate same dark system): Course Detail, Services, Shop, Blog, About, Contact, /start, Student Dashboard. Awaiting user approval of direction before site-wide rollout.
+- DONE: design-system utilities in index.css (scrollbar-none, btn-gold-outline, eyebrow-dark, card-dark, input-dark, shimmer); new Shared components `CourseCard` (dark), `ContentRow` (carousel), `MembershipBand`; dark `PageHeader`/`Empty`. **All public pages converted to the dark system**: Home, Catalog, Course Detail, Services, Shop, Blog + BlogPost, About, Contact, /start. Funnel pricing preserved (no public prices; "Enquire"/POA). Verified via screenshots (desktop + mobile), no overflow.
+- TODO: Student Dashboard + auth pages still on light theme (optional future pass). Real imagery + authority-logo strip pending Winnie's assets.
 - Preview-check 2026-10-08 resolved: prices confirmed correct as seeded; POA-vs-/start is by-design (funnel kept); invented-copy scrub deferred (wording TBD); test-data cleanup deferred.
 
 - P0: Bunny Stream credentials (BUNNY_LIBRARY_ID, BUNNY_STREAM_API_KEY, BUNNY_TOKEN_AUTH_KEY) → verify upload + signed embed. (Pending user keys.)

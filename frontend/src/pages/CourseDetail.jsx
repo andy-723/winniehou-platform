@@ -42,7 +42,7 @@ export default function CourseDetail() {
   };
 
   return (
-    <div data-testid="course-detail-page">
+    <div className="bg-[#0A192F] min-h-screen" data-testid="course-detail-page">
       <section className="bg-[#0A192F] text-white relative overflow-hidden grain">
         <img src={course.thumbnail_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0A192F] via-[#0A192F]/90 to-[#0A192F]/40" />
@@ -92,40 +92,40 @@ export default function CourseDetail() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <section className="max-w-7xl mx-auto px-6 py-16 pt-40 lg:pt-16 grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-8 space-y-14">
           <div>
-            <div className="eyebrow mb-3">What you'll master</div>
+            <div className="eyebrow-dark mb-3">What you'll master</div>
             <ul className="grid sm:grid-cols-2 gap-3">
               {course.outcomes.map((o) => (
-                <li key={o} className="flex gap-3 bg-white border border-slate-200 rounded-lg p-4 text-sm text-slate-700"><Check size={16} className="text-amber-600 shrink-0 mt-0.5" />{o}</li>
+                <li key={o} className="flex gap-3 card-dark p-4 text-sm text-slate-200"><Check size={16} className="text-amber-500 shrink-0 mt-0.5" />{o}</li>
               ))}
             </ul>
           </div>
           <div>
-            <div className="eyebrow mb-3">About this course</div>
-            <div className="prose-lux" dangerouslySetInnerHTML={{ __html: course.description }} />
+            <div className="eyebrow-dark mb-3">About this course</div>
+            <div className="prose-lux prose-dark" dangerouslySetInnerHTML={{ __html: course.description }} />
           </div>
           <div>
-            <div className="eyebrow mb-3">Curriculum</div>
+            <div className="eyebrow-dark mb-3">Curriculum</div>
             <div className="space-y-4" data-testid="curriculum">
               {course.modules.map((m, mi) => (
-                <div key={m.id} className="card-lux">
-                  <div className="px-6 py-4 bg-stone-50 border-b border-slate-200 flex items-center justify-between">
-                    <div><div className="text-xs text-slate-400 font-mono">MODULE {String(mi + 1).padStart(2, "0")}</div><h3 className="font-serif text-lg text-[#0A192F]">{m.title}</h3></div>
-                    <span className="text-xs text-slate-500">{m.lessons.length} lessons</span>
+                <div key={m.id} className="card-dark">
+                  <div className="px-6 py-4 bg-[#050E1E] border-b border-white/10 flex items-center justify-between">
+                    <div><div className="text-xs text-slate-500 font-mono">MODULE {String(mi + 1).padStart(2, "0")}</div><h3 className="font-serif text-lg text-[#F9F8F3]">{m.title}</h3></div>
+                    <span className="text-xs text-slate-400">{m.lessons.length} lessons</span>
                   </div>
-                  <ul className="divide-y divide-slate-100">
+                  <ul className="divide-y divide-white/5">
                     {m.lessons.map((l) => (
                       <li key={l.id} className="px-6 py-3.5 flex items-center justify-between gap-4 text-sm">
                         <div className="flex items-center gap-3 min-w-0">
-                          {l.locked ? <Lock size={14} className="text-slate-400 shrink-0" /> : <PlayCircle size={14} className="text-amber-600 shrink-0" />}
-                          <span className={`truncate ${l.locked ? "text-slate-500" : "text-slate-800"}`}>{l.title}</span>
+                          {l.locked ? <Lock size={14} className="text-slate-500 shrink-0" /> : <PlayCircle size={14} className="text-amber-500 shrink-0" />}
+                          <span className={`truncate ${l.locked ? "text-slate-500" : "text-slate-200"}`}>{l.title}</span>
                           {l.is_preview && !course.enrolled && <span className="gold-badge !py-0.5 shrink-0"><Eye size={11} className="mr-1" /> Free preview</span>}
                         </div>
                         <div className="flex items-center gap-4 shrink-0">
-                          <span className="text-xs text-slate-400">{l.duration_minutes} min</span>
-                          {!l.locked && <Link to={`/learn/${course.slug}?lesson=${l.id}`} className="text-xs font-medium text-amber-700 hover:underline" data-testid={`lesson-link-${l.id}`}>{course.enrolled ? "Open" : "Preview"}</Link>}
+                          <span className="text-xs text-slate-500">{l.duration_minutes} min</span>
+                          {!l.locked && <Link to={`/learn/${course.slug}?lesson=${l.id}`} className="text-xs font-medium text-amber-400 hover:underline" data-testid={`lesson-link-${l.id}`}>{course.enrolled ? "Open" : "Preview"}</Link>}
                         </div>
                       </li>
                     ))}

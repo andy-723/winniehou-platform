@@ -102,6 +102,8 @@ body {
 .scrollbar-none::-webkit-scrollbar { display: none; }
 
 .btn-gold-outline { @apply inline-flex items-center justify-center gap-2 bg-transparent text-amber-300 font-semibold px-6 py-3 rounded-lg border border-amber-500/50 hover:border-amber-400 hover:bg-amber-500/10 transition-colors duration-200; }
+.card-dark { @apply bg-[#0F213D] border border-[#D4AF37]/15 rounded-xl overflow-hidden; }
+.input-dark { @apply w-full rounded-lg border border-white/15 bg-[#0A192F] px-3.5 py-2.5 text-sm text-[#F9F8F3] placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 transition-[box-shadow,border-color]; }
 .eyebrow-dark { @apply text-xs font-mono uppercase tracking-[0.22em] text-amber-400 font-semibold; }
 
 @keyframes shimmer { 0%,100% { opacity: .2 } 50% { opacity: .4 } }

@@ -76,9 +76,9 @@ export const Spinner = ({ label = "Loading" }) => (
 );
 
 export const Empty = ({ title, hint, cta }) => (
-  <div className="text-center py-20 border border-dashed border-slate-300 rounded-xl bg-white/50" data-testid="empty-state">
-    <h3 className="font-serif text-2xl text-[#0A192F]">{title}</h3>
-    {hint && <p className="text-slate-500 text-sm mt-2">{hint}</p>}
+  <div className="text-center py-20 border border-dashed border-white/15 rounded-xl bg-white/5" data-testid="empty-state">
+    <h3 className="font-serif text-2xl text-[#F9F8F3]">{title}</h3>
+    {hint && <p className="text-slate-400 text-sm mt-2">{hint}</p>}
     {cta && <div className="mt-6">{cta}</div>}
   </div>
 );
@@ -86,9 +86,9 @@ export const Empty = ({ title, hint, cta }) => (
 export const PageHeader = ({ eyebrow, title, sub, right }) => (
   <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
     <div>
-      {eyebrow && <div className="eyebrow mb-3">{eyebrow}</div>}
-      <h1 className="font-serif text-4xl sm:text-5xl text-[#0A192F] tracking-tight">{title}</h1>
-      {sub && <p className="text-base md:text-lg text-slate-500 mt-3 max-w-2xl">{sub}</p>}
+      {eyebrow && <div className="eyebrow-dark mb-3">{eyebrow}</div>}
+      <h1 className="font-serif text-4xl sm:text-5xl text-[#F9F8F3] tracking-tight">{title}</h1>
+      {sub && <p className="text-base md:text-lg text-slate-400 mt-3 max-w-2xl">{sub}</p>}
     </div>
     {right}
   </div>
