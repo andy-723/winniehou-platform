@@ -33,6 +33,7 @@ class ClientIn(BaseModel):
     phone: str = ""
     linked_user_id: Optional[str] = None
     status: str = "active"
+    service_package_key: Optional[str] = None
 
 
 class EngagementIn(BaseModel):
@@ -65,9 +66,20 @@ async def list_clients():
 
 @router.post("/clients")
 async def create_client(body: ClientIn):
-    doc = {**body.model_dump(), "id": new_id(), "created_at": now_iso()}
+    data = body.model_dump()
+    pkg_key = data.pop("service_package_key", None)
+    if not pkg_key:
+        raise HTTPException(400, "A package is required so an engagement exists")
+    pkg = await db.service_packages.find_one({"key": pkg_key}, NO_ID)
+    if not pkg:
+        raise HTTPException(400, "Unknown package")
+    doc = {**data, "id": new_id(), "created_at": now_iso()}
     await db.coaching_clients.insert_one(doc)
     doc.pop("_id", None)
+    eng = {"id": new_id(), "client_id": doc["id"], "service_package_key": pkg_key,
+           "hours_included": pkg.get("hours_included"), "start_date": now_iso()[:10],
+           "end_date": None, "status": "active", "notes": "", "created_at": now_iso()}
+    await db.client_engagements.insert_one(eng)
     return doc
 
 
@@ -84,7 +96,9 @@ async def get_client(cid: str):
 
 @router.put("/clients/{cid}")
 async def update_client(cid: str, body: ClientIn):
-    await db.coaching_clients.update_one({"id": cid}, {"$set": body.model_dump()})
+    data = body.model_dump()
+    data.pop("service_package_key", None)
+    await db.coaching_clients.update_one({"id": cid}, {"$set": data})
     return await db.coaching_clients.find_one({"id": cid}, NO_ID)
 
 
@@ -183,7 +197,8 @@ class EntryIn(BaseModel):
 
 @router.get("/time/entries")
 async def list_entries(subject_type: Optional[str] = None, student_id: Optional[str] = None,
-                       client_id: Optional[str] = None, date_from: Optional[str] = None, date_to: Optional[str] = None):
+                       client_id: Optional[str] = None, category: Optional[str] = None,
+                       billable: Optional[bool] = None, date_from: Optional[str] = None, date_to: Optional[str] = None):
     q = {"ended_at": {"$ne": None}}
     if subject_type:
         q["subject_type"] = subject_type
@@ -191,6 +206,10 @@ async def list_entries(subject_type: Optional[str] = None, student_id: Optional[
         q["student_id"] = student_id
     if client_id:
         q["client_id"] = client_id
+    if category:
+        q["category"] = category
+    if billable is not None:
+        q["billable"] = billable
     rows = await db.time_entries.find(q, NO_ID).sort("started_at", -1).to_list(2000)
     if date_from:
         rows = [r for r in rows if r["started_at"] >= date_from]
@@ -249,3 +268,26 @@ async def hours_week():
     for r in rows:
         out[r.get("subject_type", "internal")] = out.get(r.get("subject_type", "internal"), 0) + r.get("duration_minutes", 0)
     return {k: round(v / 60, 1) for k, v in out.items()}
+
+
+@router.get("/time/profitability")
+async def profitability():
+    engs = await db.client_engagements.find({}, NO_ID).to_list(1000)
+    pkgs = {p["key"]: p for p in await db.service_packages.find({}, NO_ID).to_list(200)}
+    clients = {c["id"]: c for c in await db.coaching_clients.find({}, NO_ID).to_list(1000)}
+    out = []
+    for e in engs:
+        rows = await db.time_entries.find({"engagement_id": e["id"], "ended_at": {"$ne": None}}, {"_id": 0, "duration_minutes": 1}).to_list(5000)
+        hours = round(sum(r.get("duration_minutes", 0) for r in rows) / 60, 2)
+        pkg = pkgs.get(e["service_package_key"], {})
+        price = pkg.get("price_cents", 0)
+        c = clients.get(e["client_id"], {})
+        out.append({
+            "engagement_id": e["id"],
+            "client": f'{c.get("first_name", "")} {c.get("last_name", "")}'.strip() or "—",
+            "package": pkg.get("name", e["service_package_key"]),
+            "price_cents": price,
+            "hours": hours,
+            "rate": round((price / 100) / hours, 2) if hours > 0 else None,
+        })
+    return out

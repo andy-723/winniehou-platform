@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Search, Ban, CheckCircle, LogOut, Plus } from "lucide-react";
+import { Search, Ban, CheckCircle, LogOut, Plus, Play } from "lucide-react";
 import { toast } from "sonner";
 import { api, fmt, fmtDate, errMsg } from "@/lib/api";
 import { Spinner } from "@/components/Shared";
@@ -26,12 +26,16 @@ export default function AdminStudents() {
   const [courses, setCourses] = useState([]);
   const [grant, setGrant] = useState("");
   const [notes, setNotes] = useState("");
+  const [coachEntries, setCoachEntries] = useState([]);
 
   const load = () => api.get("/admin/students", { params: q ? { q } : {} }).then((r) => setRows(r.data));
   useEffect(() => { const t = setTimeout(load, 250); return () => clearTimeout(t); }, [q]); // eslint-disable-line
   useEffect(() => { api.get("/admin/courses").then((r) => setCourses(r.data)); }, []);
 
-  const openStudent = async (u) => { const { data } = await api.get(`/admin/students/${u.id}`); setSel(data); setNotes(data.admin_notes || ""); };
+  const loadCoach = (id) => api.get("/admin/time/entries", { params: { subject_type: "student", student_id: id } }).then((r) => setCoachEntries(r.data)).catch(() => setCoachEntries([]));
+  const openStudent = async (u) => { const { data } = await api.get(`/admin/students/${u.id}`); setSel(data); setNotes(data.admin_notes || ""); loadCoach(u.id); };
+  const startTimer = () => window.dispatchEvent(new CustomEvent("start-timer", { detail: { subject_type: "student", student_id: sel.id, billable: false, description: "", category: "" } }));
+  useEffect(() => { const h = () => sel && loadCoach(sel.id); window.addEventListener("time-updated", h); return () => window.removeEventListener("time-updated", h); }); // eslint-disable-line
   const patch = async (body, msg) => {
     try { await api.patch(`/admin/students/${sel.id}`, body); toast.success(msg); const { data } = await api.get(`/admin/students/${sel.id}`); setSel(data); load(); }
     catch (e) { toast.error(errMsg(e)); }
@@ -124,6 +128,17 @@ export default function AdminStudents() {
             <div>
               <div className="eyebrow mb-2">Orders</div>
               <ul className="divide-y border rounded-lg">{sel.orders.map((o) => <li key={o.id} className="flex justify-between px-3 py-2"><span className="font-mono text-xs">{o.id.slice(0, 8).toUpperCase()}</span><span>{fmt(o.total)}</span><span className="gold-badge">{o.status}</span></li>)}{sel.orders.length === 0 && <li className="px-3 py-3 text-slate-400">No orders</li>}</ul>
+            </div>
+
+            <div data-testid="student-coach-time">
+              <div className="flex items-center justify-between mb-2">
+                <div className="eyebrow">Coach time · {(coachEntries.reduce((s, e) => s + e.duration_minutes, 0) / 60).toFixed(1)}h total</div>
+                <button onClick={startTimer} className="inline-flex items-center gap-1.5 btn-navy !py-1.5 !text-xs" data-testid="student-start-timer"><Play size={13} /> Start timer</button>
+              </div>
+              <ul className="divide-y border rounded-lg">
+                {coachEntries.slice(0, 10).map((e) => <li key={e.id} className="flex justify-between px-3 py-2 text-xs"><span className="truncate text-slate-600">{e.description || e.category || "—"}</span><span className="font-mono text-slate-700">{(e.duration_minutes / 60).toFixed(1)}h</span></li>)}
+                {coachEntries.length === 0 && <li className="px-3 py-3 text-slate-400 text-xs">No coach time logged yet.</li>}
+              </ul>
             </div>
 
             <div>

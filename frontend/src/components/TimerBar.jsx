@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Play, Square, Search } from "lucide-react";
 import { toast } from "sonner";
 import { api, errMsg } from "@/lib/api";
@@ -12,6 +13,7 @@ const fmtElapsed = (startIso) => {
 };
 
 export default function TimerBar() {
+  const navigate = useNavigate();
   const [running, setRunning] = useState(null);
   const [cats, setCats] = useState([]);
   const [subject, setSubject] = useState("client");
@@ -27,6 +29,16 @@ export default function TimerBar() {
   const loadTimer = () => api.get("/admin/time/timer").then((r) => setRunning(r.data)).catch(() => {});
   useEffect(() => { loadTimer(); api.get("/admin/time/categories").then((r) => setCats(r.data)); }, []);
   useEffect(() => { tick.current = setInterval(() => force((x) => x + 1), 1000); return () => clearInterval(tick.current); }, []);
+
+  // External "Start timer" shortcuts (student drawer, client engagements, Continue button)
+  useEffect(() => {
+    const h = async (e) => {
+      try { const { data } = await api.post("/admin/time/timer/start", e.detail); setRunning(data); toast.success("Timer started"); window.dispatchEvent(new Event("time-updated")); }
+      catch (err) { toast.error(errMsg(err)); }
+    };
+    window.addEventListener("start-timer", h);
+    return () => window.removeEventListener("start-timer", h);
+  }, []);
 
   useEffect(() => {
     if (!q || subject === "internal") { setResults([]); return; }
@@ -77,6 +89,9 @@ export default function TimerBar() {
                 </div>
               )}
             </div>
+          )}
+          {subject === "client" && picked && !picked.engagement_id && (
+            <button onClick={() => navigate(`/admin/clients?open=${picked.id}`)} className="text-xs text-amber-300 underline" data-testid="timer-add-package">No package — add one</button>
           )}
           <select value={cat} onChange={(e) => setCat(e.target.value)} className="bg-white/5 border border-white/15 rounded-lg px-2 py-1.5 text-sm text-white" data-testid="timer-category">
             <option value="">Category</option>

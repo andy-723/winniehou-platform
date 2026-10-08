@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Plus, Play } from "lucide-react";
 import { toast } from "sonner";
 import { api, fmtDate, errMsg } from "@/lib/api";
 import { Spinner } from "@/components/Shared";
@@ -8,19 +9,31 @@ import { AdminHeader, Table, Modal } from "./AdminLayout";
 const hrs = (m) => `${(m / 60).toFixed(1)}h`;
 
 export default function AdminClients() {
+  const [params, setParams] = useSearchParams();
   const [rows, setRows] = useState(null);
   const [pkgs, setPkgs] = useState([]);
   const [sel, setSel] = useState(null);
   const [adding, setAdding] = useState(false);
-  const [nc, setNc] = useState({ first_name: "", last_name: "", email: "", phone: "", status: "active" });
+  const [nc, setNc] = useState({ first_name: "", last_name: "", email: "", phone: "", status: "active", service_package_key: "" });
   const [eng, setEng] = useState({ service_package_key: "", start_date: "", notes: "" });
 
   const load = () => api.get("/admin/clients").then((r) => setRows(r.data));
   useEffect(() => { load(); api.get("/admin/services").then((r) => setPkgs(r.data)); }, []);
 
   const open = async (c) => { const { data } = await api.get(`/admin/clients/${c.id}`); setSel(data); };
-  const createClient = async () => { try { await api.post("/admin/clients", nc); toast.success("Client added"); setAdding(false); setNc({ first_name: "", last_name: "", email: "", phone: "", status: "active" }); load(); } catch (e) { toast.error(errMsg(e)); } };
+
+  // auto-open a client when arriving via ?open=<id> (e.g. the timer bar "add package" link)
+  useEffect(() => {
+    const id = params.get("open");
+    if (id && rows) { const c = rows.find((r) => r.id === id); if (c) open(c); setParams({}, { replace: true }); }
+  }, [params, rows]); // eslint-disable-line
+
+  const createClient = async () => {
+    if (!nc.service_package_key) { toast.error("Choose a package"); return; }
+    try { await api.post("/admin/clients", nc); toast.success("Client added"); setAdding(false); setNc({ first_name: "", last_name: "", email: "", phone: "", status: "active", service_package_key: "" }); load(); } catch (e) { toast.error(errMsg(e)); }
+  };
   const addEng = async () => { try { await api.post(`/admin/clients/${sel.id}/engagements`, eng); toast.success("Engagement added"); setEng({ service_package_key: "", start_date: "", notes: "" }); open(sel); load(); } catch (e) { toast.error(errMsg(e)); } };
+  const startTimer = (e) => window.dispatchEvent(new CustomEvent("start-timer", { detail: { subject_type: "client", client_id: sel.id, engagement_id: e.id, billable: true, description: "", category: "" } }));
 
   if (!rows) return <Spinner />;
 
@@ -55,6 +68,10 @@ export default function AdminClients() {
           </div>
           <input className="input-lux" placeholder="Email" value={nc.email} onChange={(e) => setNc({ ...nc, email: e.target.value })} data-testid="client-email" />
           <input className="input-lux" placeholder="Phone" value={nc.phone} onChange={(e) => setNc({ ...nc, phone: e.target.value })} data-testid="client-phone" />
+          <select className="input-lux" value={nc.service_package_key} onChange={(e) => setNc({ ...nc, service_package_key: e.target.value })} data-testid="client-package">
+            <option value="">Package (required)…</option>
+            {pkgs.map((p) => <option key={p.key} value={p.key}>{p.name}</option>)}
+          </select>
           <button onClick={createClient} className="btn-gold w-full" data-testid="client-save">Add client</button>
         </div>
       </Modal>
@@ -66,7 +83,7 @@ export default function AdminClients() {
             <div>
               <div className="eyebrow mb-2">Engagements</div>
               <ul className="divide-y border rounded-lg mb-3">
-                {(sel.engagements || []).map((e) => <li key={e.id} className="px-3 py-2 flex justify-between"><span>{pkgs.find((p) => p.key === e.service_package_key)?.name || e.service_package_key}</span><span className="gold-badge">{e.status}</span></li>)}
+                {(sel.engagements || []).map((e) => <li key={e.id} className="px-3 py-2 flex justify-between items-center"><span>{pkgs.find((p) => p.key === e.service_package_key)?.name || e.service_package_key}</span><div className="flex items-center gap-3"><span className="gold-badge">{e.status}</span><button onClick={() => startTimer(e)} className="inline-flex items-center gap-1 text-xs text-amber-700 hover:underline" data-testid={`client-start-timer-${e.id}`}><Play size={12} /> Start timer</button></div></li>)}
                 {(sel.engagements || []).length === 0 && <li className="px-3 py-3 text-slate-400">No engagements</li>}
               </ul>
               <div className="flex gap-2">
