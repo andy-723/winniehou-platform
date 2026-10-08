@@ -33,10 +33,15 @@ Premium LMS + e-commerce for working professionals: course catalog, Stripe one-t
 - Public pricing hidden across Home, CourseCard, CourseDetail, Shop; nav cart hidden. Home band "Work with Winnie" → /services. Home claims → placeholders.
 - Tested iteration_2: 28/28 backend pytest + all frontend flows pass.
 
+### Phase C — Student performance tracker (2026-10-08)
+- Backend `routers/admin.py`: `student_metrics()` (percent, lessons_completed, last_active, status active/at_risk/completed, per_course with module bars) + `student_timeline()` (completed lessons + purchases). Extended GET /admin/students (adds progress_percent, lessons_completed, last_active, status), GET /admin/students/{id} (metrics + timeline + admin_notes), PATCH /admin/students/{id} (notes persistence), and /admin/dashboard (at_risk_students, avg_completion).
+- Frontend AdminStudents: status filter tabs (All/Active/At risk/Completed w/ counts), progress-bar + lessons + last-active + status columns; detail modal gets 4-metric header, per-course module-by-module progress, activity timeline, admin notes. AdminDashboard: 2 new stat cards (At risk, Avg completion).
+- At-risk = active enrollments + no activity 7+ days. Tested iteration_3: 7/7 backend pytest + all frontend flows pass.
+
 ## Backlog / Roadmap
 - P0: Bunny Stream credentials (BUNNY_LIBRARY_ID, BUNNY_STREAM_API_KEY, BUNNY_TOKEN_AUTH_KEY) → verify upload + signed embed. (Pending user keys.)
 - P0: Revised "automation front" MD — user referenced a local Downloads MD that was NOT uploaded; re-request before building Phase E.
-- P1 (Build Plan Phase C): Student performance tracker in admin — % complete, last-active, at-risk (7+ days), avg score, student drill-down, dashboard cards.
+- P1 (Build Plan Phase C): Student performance tracker — DONE 2026-10-08 (iteration_3).
 - P1 (Phase D): Written-activity lesson type + submissions queue + coach review (+ AI "Suggest feedback" via Emergent LLM key / Claude — user approved).
 - P1 (Phase E): /start personalised landing (?name=&lead=), Calendly + Stripe deposit (needs REACT_APP_CALENDLY_URL, REACT_APP_STRIPE_DEPOSIT_URL). BLOCKED on automation MD.
 - P2 hardening (pre-launch): rate-limit/captcha on public enquiry+waitlist; EmailStr validation; optional API-layer price masking for anonymous callers; completion certificates; SEO/OG per course.

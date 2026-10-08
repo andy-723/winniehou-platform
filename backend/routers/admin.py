@@ -22,7 +22,7 @@ def _parse_dt(s):
     if not s:
         return None
     try:
-        dt = datetime.fromisoformat(s)
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00") if isinstance(s, str) else s)
         return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
     except Exception:
         return None
