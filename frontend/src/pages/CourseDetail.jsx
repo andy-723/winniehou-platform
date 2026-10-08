@@ -6,6 +6,7 @@ import { api, fmt, errMsg } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { Spinner } from "@/components/Shared";
+import { ShortDisclaimer } from "@/pages/Legal";
 import { PUBLIC_PRICING } from "@/lib/config";
 
 export default function CourseDetail() {
@@ -87,6 +88,7 @@ export default function CourseDetail() {
                   <li key={x} className="flex gap-2"><Check size={16} className="text-amber-600 shrink-0 mt-0.5" /> {x}</li>
                 ))}
               </ul>
+              <ShortDisclaimer className="mt-5 pt-4 border-t border-slate-200" />
             </div>
           </div>
         </div>

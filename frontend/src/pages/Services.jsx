@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Check, Calendar, Mail, Sparkles } from "lucide-react";
 import { api, errMsg } from "@/lib/api";
 import { PageHeader, Spinner, Empty } from "@/components/Shared";
+import { ShortDisclaimer } from "@/pages/Legal";
 import { PUBLIC_PRICING, servicePrice, CALENDLY_URL } from "@/lib/config";
 
 export default function Services() {
@@ -70,6 +71,8 @@ export default function Services() {
           </div>
         )}
 
+        <ShortDisclaimer className="max-w-3xl mx-auto text-center mt-6" />
+
         <div id="services-enquiry" className="card-dark p-8 mt-16 max-w-2xl mx-auto" data-testid="services-enquiry">
           <h2 className="font-serif text-2xl text-[#F9F8F3] mb-1">Enquire about coaching</h2>
           <p className="text-sm text-slate-400 mb-6">Tell us a little about your goals and we'll be in touch.</p>
@@ -82,7 +85,7 @@ export default function Services() {
               <input className="input-dark" placeholder="Phone (optional)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} data-testid="enquiry-phone" />
               <select className="input-dark" value={form.package} onChange={(e) => setForm({ ...form, package: e.target.value })} data-testid="enquiry-package"><option value="">Which service?</option>{pkgs.map((p) => <option key={p.key} value={p.key}>{p.name}</option>)}</select>
               <textarea className="input-dark" rows={4} placeholder="Your message" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} data-testid="enquiry-message" />
-              <label className="flex items-start gap-2 text-sm text-slate-300"><input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} className="mt-1" data-testid="enquiry-consent" /> I agree to be contacted about my enquiry.</label>
+              <label className="flex items-start gap-2 text-sm text-slate-300"><input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} className="mt-1" data-testid="enquiry-consent" /> I agree to be contacted about my enquiry and to the <a href="/privacy" target="_blank" rel="noreferrer" className="text-amber-400 hover:underline">Privacy Policy</a>.</label>
               <button className="btn-gold w-full" data-testid="enquiry-submit">Send enquiry</button>
             </form>
           )}

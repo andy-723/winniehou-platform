@@ -31,7 +31,7 @@ export default function Contact() {
                 <input className="input-dark" type="email" placeholder="Email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} data-testid="contact-email" />
                 <input className="input-dark" placeholder="Phone (optional)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} data-testid="contact-phone" />
                 <textarea className="input-dark" rows={5} placeholder="Your message" required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} data-testid="contact-message" />
-                <label className="flex items-start gap-2 text-sm text-slate-300"><input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} className="mt-1" data-testid="contact-consent" /> I agree to be contacted about my enquiry.</label>
+                <label className="flex items-start gap-2 text-sm text-slate-300"><input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} className="mt-1" data-testid="contact-consent" /> I agree to be contacted about my enquiry and to the <a href="/privacy" target="_blank" rel="noreferrer" className="text-amber-400 hover:underline">Privacy Policy</a>.</label>
                 <button className="btn-gold w-full" data-testid="contact-submit">Send message</button>
               </form>
             )}

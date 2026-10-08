@@ -26,6 +26,7 @@ class CheckoutIn(BaseModel):
     items: List[CartItem]
     coupon_code: Optional[str] = None
     origin_url: str
+    terms_version: Optional[str] = None
 
 
 async def resolve_items(items: List[CartItem], user_id: str) -> list:
@@ -99,7 +100,7 @@ async def create_checkout(body: CheckoutIn, user: dict = Depends(get_current_use
         line_items.append({"quantity": 1, "price_data": {"currency": "usd", "unit_amount": amount,
                                                          "product_data": product_data}})
     if total == 0:
-        await db.orders.insert_one(_order_doc(order_id, user, items, subtotal, discount, total, coupon, None))
+        await db.orders.insert_one(_order_doc(order_id, user, items, subtotal, discount, total, coupon, None, body.terms_version))
         await fulfill_order(order_id, body.origin_url)
         return {"checkout_url": f"{body.origin_url}/payment/success?order_id={order_id}", "session_id": None,
                 "order_id": order_id}
@@ -123,18 +124,19 @@ async def create_checkout(body: CheckoutIn, user: dict = Depends(get_current_use
     except stripe.error.StripeError as e:
         logger.error(f"Stripe checkout error: {e}")
         raise HTTPException(502, f"Payment provider error: {e.user_message or str(e)}")
-    await db.orders.insert_one(_order_doc(order_id, user, items, subtotal, discount, total, coupon, session.id))
+    await db.orders.insert_one(_order_doc(order_id, user, items, subtotal, discount, total, coupon, session.id, body.terms_version))
     await db.payment_transactions.insert_one({
         "session_id": session.id, "order_id": order_id, "user_id": user["id"], "amount": total, "currency": "usd",
         "status": "initiated", "payment_status": "pending", "created_at": now_iso(), "updated_at": now_iso()})
     return {"checkout_url": session.url, "session_id": session.id, "order_id": order_id}
 
 
-def _order_doc(order_id, user, items, subtotal, discount, total, coupon, session_id):
+def _order_doc(order_id, user, items, subtotal, discount, total, coupon, session_id, terms_version=None):
     return {"id": order_id, "user_id": user["id"], "email": user["email"], "name": user.get("name", ""),
             "items": items, "subtotal": subtotal, "discount": discount, "total": total, "currency": "usd",
             "coupon_code": coupon["code"] if coupon else None, "status": "pending" if total else "paid",
             "stripe_session_id": session_id, "stripe_payment_intent_id": None, "receipt_url": None,
+            "terms_version": terms_version,
             "created_at": now_iso(), "updated_at": now_iso(), "paid_at": now_iso() if not total else None}
 
 

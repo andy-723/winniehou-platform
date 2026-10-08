@@ -61,6 +61,15 @@ Premium LMS + e-commerce for working professionals: course catalog, Stripe one-t
 
 ## Backlog / Roadmap
 
+### Legal pages — Terms, Privacy, Disclaimer (2026-10-08)
+- Implemented per Andrew's `Better_Careers_Terms_and_Conditions_DRAFT.md` (static content, DRAFT with [bracketed] placeholders kept for lawyer/Winnie to fill).
+- Content source: `frontend/src/lib/legalContent.js` (TERMS_PARTS A–D, DISCLAIMER + short version, PRIVACY + sharing table, `TERMS_ACCEPT_VERSION`). Pages: `frontend/src/pages/Legal.jsx` → `/terms` (jump-nav + anchors #website/#coaching/#students/#shop), `/privacy` (APP policy + overseas-sharing table), `/disclaimer`. Dark "velvet-rope" theme, draft banner, no overflow (desktop+mobile verified).
+- Footer gained a "Legal" column (Terms/Privacy/Disclaimer) on every page.
+- Required consent checkbox added at **register** (frontend gate, auth backend untouched) and **cart checkout** (courses + shop both route through the cart). Checkout now sends `terms_version` → persisted on the order (`payments.py` `_order_doc`, verified e2e).
+- Short disclaimer (`ShortDisclaimer`) shown under coaching packages on `/services` and on each course page (`CourseDetail`).
+- Contact + Services enquiry consent labels now link to the Privacy Policy.
+- NOTE: this is a legal DRAFT — placeholders ([Business legal name], [ABN], [State], [contact email], coaching hours, refund windows, etc.) must be completed and lawyer-reviewed before launch.
+
 ### UI redesign — Candace-Owens model (2026-10-08, in progress)
 - Modeled on candaceowens.com (dark premium "velvet-rope", horizontal content carousels with "Explore all", editorial hero, membership CTA band) recoloured to navy #0A192F / gold #D4AF37 / ivory #F9F8F3. Blueprint: `/app/design_guidelines.json`.
 - DONE: design-system utilities in index.css (scrollbar-none, btn-gold-outline, eyebrow-dark, card-dark, input-dark, shimmer); new Shared components `CourseCard` (dark), `ContentRow` (carousel), `MembershipBand`; dark `PageHeader`/`Empty`. **All public pages converted to the dark system**: Home, Catalog, Course Detail, Services, Shop, Blog + BlogPost, About, Contact, /start. Funnel pricing preserved (no public prices; "Enquire"/POA). Verified via screenshots (desktop + mobile), no overflow.

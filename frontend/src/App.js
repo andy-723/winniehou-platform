@@ -18,6 +18,7 @@ import Cart from "@/pages/Cart";
 import { PaymentSuccess, PaymentCancel } from "@/pages/PaymentResult";
 import Dashboard, { OrderReceipt } from "@/pages/Dashboard";
 import Blog, { BlogPost } from "@/pages/Blog";
+import { Terms, Privacy, Disclaimer } from "@/pages/Legal";
 import { Login, Register, ForgotPassword, ResetPassword } from "@/pages/Auth";
 import AdminLayout from "@/pages/admin/AdminLayout";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
@@ -68,6 +69,9 @@ export default function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/disclaimer" element={<Disclaimer />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

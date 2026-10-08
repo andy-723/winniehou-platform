@@ -6,6 +6,7 @@ import { api, fmt, errMsg } from "@/lib/api";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { PageHeader, Empty } from "@/components/Shared";
+import { TERMS_ACCEPT_VERSION } from "@/lib/legalContent";
 
 export default function Cart() {
   const cart = useCart();
@@ -14,8 +15,9 @@ export default function Cart() {
   const [code, setCode] = useState("");
   const [quote, setQuote] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [agree, setAgree] = useState(false);
 
-  const payload = () => ({ items: cart.items.map((i) => ({ type: i.type, id: i.id })), coupon_code: code || null, origin_url: window.location.origin });
+  const payload = () => ({ items: cart.items.map((i) => ({ type: i.type, id: i.id })), coupon_code: code || null, origin_url: window.location.origin, terms_version: TERMS_ACCEPT_VERSION });
 
   const applyCoupon = async () => {
     if (!user) { nav("/login?next=/cart"); return; }
@@ -25,6 +27,7 @@ export default function Cart() {
 
   const checkout = async () => {
     if (!user) { nav("/login?next=/cart"); return; }
+    if (!agree) { toast.error("Please agree to the Terms and Privacy Policy to continue."); return; }
     setBusy(true);
     try {
       const { data } = await api.post("/payments/checkout", payload());
@@ -68,7 +71,8 @@ export default function Cart() {
                 <div className="flex justify-between font-serif text-2xl text-[#0A192F] pt-3 border-t border-slate-200"><span>Total</span><span data-testid="cart-total">{fmt(total)}</span></div>
                 <p className="text-xs text-slate-400">Tax calculated at checkout where applicable.</p>
               </div>
-              <button onClick={checkout} disabled={busy} className="btn-gold w-full mt-6 disabled:opacity-60" data-testid="checkout-btn">{busy ? "Redirecting…" : <>Secure checkout <ArrowRight size={16} /></>}</button>
+              <label className="flex items-start gap-2 text-xs text-slate-500 mt-5"><input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5" data-testid="checkout-consent" /> I agree to the <Link to="/terms" target="_blank" className="text-amber-700 hover:underline">Terms</Link> and <Link to="/privacy" target="_blank" className="text-amber-700 hover:underline">Privacy Policy</Link>.</label>
+              <button onClick={checkout} disabled={busy} className="btn-gold w-full mt-4 disabled:opacity-60" data-testid="checkout-btn">{busy ? "Redirecting…" : <>Secure checkout <ArrowRight size={16} /></>}</button>
               {!user && <p className="text-xs text-center text-slate-500 mt-3">You'll be asked to sign in first.</p>}
             </div>
           </div>

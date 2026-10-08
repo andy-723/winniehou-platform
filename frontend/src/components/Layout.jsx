@@ -91,12 +91,20 @@ export const Footer = () => (
           <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
         </ul>
       </div>
-      <div className="md:col-span-4">
+      <div className="md:col-span-3">
         <div className="eyebrow mb-4">Account</div>
         <ul className="space-y-2 text-sm">
           <li><Link to="/dashboard" className="hover:text-white transition-colors">My learning</Link></li>
           <li><Link to="/dashboard?tab=orders" className="hover:text-white transition-colors">Orders & receipts</Link></li>
           <li><Link to="/login" className="hover:text-white transition-colors">Sign in</Link></li>
+        </ul>
+      </div>
+      <div className="md:col-span-1">
+        <div className="eyebrow mb-4">Legal</div>
+        <ul className="space-y-2 text-sm">
+          <li><Link to="/terms" className="hover:text-white transition-colors" data-testid="footer-terms">Terms</Link></li>
+          <li><Link to="/privacy" className="hover:text-white transition-colors" data-testid="footer-privacy">Privacy</Link></li>
+          <li><Link to="/disclaimer" className="hover:text-white transition-colors" data-testid="footer-disclaimer">Disclaimer</Link></li>
         </ul>
       </div>
     </div>

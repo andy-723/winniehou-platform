@@ -59,10 +59,13 @@ export function Register() {
   const nav = useNavigate();
   const [params] = useSearchParams();
   const [f, setF] = useState({ name: "", email: "", password: "" });
+  const [agree, setAgree] = useState(false);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const submit = async (e) => {
-    e.preventDefault(); setBusy(true); setErr("");
+    e.preventDefault();
+    if (!agree) { setErr("Please agree to the Terms and Privacy Policy to continue."); return; }
+    setBusy(true); setErr("");
     try { await register(f.name, f.email, f.password); nav(params.get("next") || "/dashboard"); }
     catch (ex) { setErr(errMsg(ex)); } finally { setBusy(false); }
   };
@@ -73,6 +76,7 @@ export function Register() {
         <Field label="Full name" required value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} testId="register-name" />
         <Field label="Email" type="email" required value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} testId="register-email" />
         <Field label="Password (min. 8 characters)" type="password" required minLength={8} value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} testId="register-password" />
+        <label className="flex items-start gap-2 text-sm text-slate-600"><input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1" data-testid="register-consent" /> I agree to the <Link to="/terms" target="_blank" className="text-amber-700 hover:underline">Terms</Link> and <Link to="/privacy" target="_blank" className="text-amber-700 hover:underline">Privacy Policy</Link>.</label>
         {err && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2" data-testid="register-error">{err}</div>}
         <button disabled={busy} className="btn-gold w-full disabled:opacity-60" data-testid="register-submit">{busy ? "Creating…" : "Create account"}</button>
       </form>
