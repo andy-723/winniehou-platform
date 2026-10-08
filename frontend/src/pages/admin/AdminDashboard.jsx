@@ -26,7 +26,7 @@ export default function AdminDashboard() {
       <AdminHeader title="Dashboard" sub="A snapshot of how the academy is performing." />
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
         {stats.map((s) => (
-          <div key={s.label} className="card-lux p-6" data-testid={`stat-${s.label.toLowerCase().replace(" ", "-")}`}>
+          <div key={s.label} className="card-lux p-6" data-testid={`stat-${s.label.toLowerCase().replace(/ /g, "-")}`}>
             <div className="flex justify-between items-start"><div className="eyebrow">{s.label}</div><s.icon size={16} className="text-amber-600" /></div>
             <div className="font-serif text-3xl text-[#0A192F] mt-3">{s.value}</div>
             <div className="text-xs text-slate-400 mt-1">{s.sub}</div>

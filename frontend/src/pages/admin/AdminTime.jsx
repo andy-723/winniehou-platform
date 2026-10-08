@@ -19,7 +19,7 @@ export default function AdminTime() {
     api.get("/admin/time/summary").then((r) => setSummary(r.data));
   };
   useEffect(() => { load(); }, [tab]); // eslint-disable-line
-  useEffect(() => { const h = () => load(); window.addEventListener("time-updated", h); return () => window.removeEventListener("time-updated", h); }); // eslint-disable-line
+  useEffect(() => { const h = () => load(); window.addEventListener("time-updated", h); return () => window.removeEventListener("time-updated", h); }, []); // eslint-disable-line
 
   const del = async (id) => { if (!window.confirm("Delete entry?")) return; await api.delete(`/admin/time/entries/${id}`); toast.success("Deleted"); load(); };
 

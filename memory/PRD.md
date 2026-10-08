@@ -44,6 +44,11 @@ Premium LMS + e-commerce for working professionals: course catalog, Stripe one-t
 - Each visit with a `lead` param is logged: POST /api/lead-visits → `lead_visits` collection. Admin → Services now has a 4th "Lead visits" tab (GET /api/admin/lead-visits).
 - Self-tested: lead-visit logging + admin list via curl; /start render (greeting + revealed pricing + fallback CTA) via screenshot. Note: the broader "automation front" (Typeform→Make.com→Gamma CDP→Google Sheets) in Andrew's As-Built doc is EXTERNAL SaaS, not in this app's scope — the platform only provides the /start endpoint.
 
+### Phase G — Toggl-style time tracking (2026-10-08)
+- New `routers/timetrack.py`: coaching_clients + client_engagements CRUD, admin-editable time_categories (13 seeded), server-side single running timer (start auto-stops previous), time_entries CRUD with subject_type validation (student|client|internal, enforced in API), summary + hours-week reports. `hours_included` added to service_packages (Quantum Leap=12). admin.py students list adds coach_minutes.
+- Frontend: `TimerBar` (fixed in admin layout), `AdminTime` (summary cards + All/Clients/Students/Internal tabs + day-grouped entries + delete + by-category), `AdminClients` (list w/ hours-used-vs-included bar + detail w/ engagements & entries), sidebar Clients+Time, Dashboard "Hours this week" card, Students "Coach time" column.
+- Deferred (not built): week-grid view, CSV export, submission-review start-timer shortcut, DELETE endpoint for clients. Tested iteration_4: 12/12 backend pytest + all frontend flows pass.
+
 ## Backlog / Roadmap
 
 ### UI redesign — Candace-Owens model (2026-10-08, in progress)
