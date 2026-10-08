@@ -1,0 +1,27 @@
+{
+  "summary": "Iteration 2 focused on the new Services/About/Contact features, admin Services section, global public-pricing-hide behavior, and regression of baseline admin pages. Added 7 new pytest cases to backend_test.py (TestServicesPublic + TestServicesAdmin). All 28 backend tests pass (21 regression from iteration_1 + 7 new). Playwright covered /services (4 package cards: career-coaching-essentials, interview-for-success, bundle, business-english-quantum-leap, 'Best value' badge on bundle, POA shown, no '$'), enquiry form (no-consent -> error, with consent -> success), 1-on-1 waitlist submit, /about renders, /contact prefill via ?subject=X + submit success, Home page shows [TBC] + [CLIENT TESTIMONIAL TO CONFIRM] placeholders and home-services-cta, Home course cards + /courses catalog cards have no '$', Course detail (non-enrolled) shows 'Enquire for pricing' + course-enquire-btn (no Enrol/Add to cart), /shop products show Enquire buttons and no 'Add to cart', navbar has NO cart icon. Admin: login redirects to /admin; /admin/services shows admin-nav-services + 3 tabs (packages/enquiries/waitlist); add-package-btn opens modal with pkg-name/pkg-key/pkg-save and persists new package into the list; Enquiries tab shows 'Mark contacted'; /admin, /admin/courses, /admin/students regression pages still load.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml",
+    "/app/test_reports/pytest/services_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "admin.py PATCH /service-enquiries/{eid} uses `contacted` as query param (not JSON body) - matches the existing /coupons PATCH style but inconsistent with other PATCH endpoints. Minor.",
+    "content.py POST /service-enquiries + /waitlist have NO rate limiting - vulnerable to spam/bot submissions. Recommend IP rate limit or hCaptcha before public launch.",
+    "content.py EnquiryIn.email / WaitlistIn.email are plain `str` - should be pydantic EmailStr to reject bad emails at the API boundary.",
+    "admin.py update_service does NOT guard duplicate `key` collisions on PUT (create does). Changing a package's key to another existing package's key would silently overwrite the unique-index assumption; add a pre-check.",
+    "/api/services returns all published packages up to 100 with no pagination - fine today but note the ceiling.",
+    "Public-pricing-hide is enforced in UI (config.js PUBLIC_PRICING=false) only; API still returns price_cents on /api/products, /api/courses, /api/services. If true confidentiality is required, mask price at the API layer when caller is anonymous."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100% (28/28 pytest)", "frontend": "100% of covered flows"},
+  "test_credentials": "Admin andrew.phan723@gmail.com / WinnieAdmin2026!; Student student@example.com / Student123! (unchanged from iteration_1)",
+  "seed_data_creation": "No manual seed. Backend seeds 4 service packages on startup. Tests prefix created data with TEST_/ui-pkg- for identification.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Iteration 2 added TestServicesPublic + TestServicesAdmin classes to /app/backend/tests/backend_test.py. Login route is /login (not /auth). AdminServices page lives at /admin/services with data-testids: admin-nav-services, services-tab-packages|enquiries|waitlist, add-package-btn, pkg-name, pkg-key, pkg-save. Services page data-testids: services-page, service-card-{key}, enquiry-name/email/consent/submit, waitlist-name/email/submit. Contact page data-testids: contact-name/email/message/consent/submit. CALENDLY_URL and STRIPE_DEPOSIT_URL env vars are intentionally empty - all packages render Enquire CTA. Anonymous /auth/me 401 console errors are expected (no session).",
+  "rca of the issue": "N/A - all requested features working end-to-end."
+}

@@ -410,7 +410,11 @@ async def create_service(body: ServicePackageIn):
 
 @router.put("/services/{sid}")
 async def update_service(sid: str, body: ServicePackageIn):
-    doc = {**body.model_dump(), "key": slugify(body.key or body.name), "updated_at": now_iso()}
+    key = slugify(body.key or body.name)
+    clash = await db.service_packages.find_one({"key": key, "id": {"$ne": sid}})
+    if clash:
+        raise HTTPException(400, "Another package already uses this key")
+    doc = {**body.model_dump(), "key": key, "updated_at": now_iso()}
     res = await db.service_packages.update_one({"id": sid}, {"$set": doc})
     if not res.matched_count:
         raise HTTPException(404, "Package not found")

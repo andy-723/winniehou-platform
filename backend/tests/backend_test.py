@@ -324,3 +324,103 @@ class TestFileUpload:
         ra = requests.get(f"{API}/files/{fid}", headers=_h(admin_token))
         assert ra.status_code == 200
         assert ra.content.startswith(b"%PDF")
+
+
+
+# ---------- services / enquiries / waitlist ----------
+class TestServicesPublic:
+    def test_list_services_published(self):
+        r = requests.get(f"{API}/services", timeout=20)
+        assert r.status_code == 200, r.text
+        data = r.json()
+        keys = {s["key"] for s in data}
+        for expected in ["career-coaching-essentials", "interview-for-success",
+                         "bundle", "business-english-quantum-leap"]:
+            assert expected in keys, f"missing {expected} in {keys}"
+        # sorted by sort_order ascending
+        orders = [s.get("sort_order", 0) for s in data]
+        assert orders == sorted(orders)
+        for s in data:
+            assert s.get("status") == "published"
+            assert "_id" not in s
+
+    def test_enquiry_requires_consent(self):
+        body = {"name": "T", "email": "t@example.com", "consent": False,
+                "package": "bundle", "message": "hi"}
+        r = requests.post(f"{API}/service-enquiries", json=body, timeout=20)
+        assert r.status_code == 400
+
+    def test_enquiry_success(self, admin_token):
+        em = f"enq_{uuid.uuid4().hex[:6]}@example.com"
+        body = {"name": "TEST Enq", "email": em, "phone": "0400", "package": "bundle",
+                "message": "please contact", "consent": True}
+        r = requests.post(f"{API}/service-enquiries", json=body, timeout=20)
+        assert r.status_code == 200, r.text
+        assert r.json() == {"ok": True}
+        # verify stored (admin)
+        lst = requests.get(f"{API}/admin/service-enquiries", headers=_h(admin_token)).json()
+        assert any(e["email"] == em for e in lst)
+
+    def test_waitlist_success(self, admin_token):
+        em = f"wl_{uuid.uuid4().hex[:6]}@example.com"
+        r = requests.post(f"{API}/waitlist",
+                          json={"name": "TEST WL", "email": em, "source": "1on1"}, timeout=20)
+        assert r.status_code == 200
+        assert r.json() == {"ok": True}
+        lst = requests.get(f"{API}/admin/waitlist", headers=_h(admin_token)).json()
+        assert any(w["email"] == em for w in lst)
+
+
+class TestServicesAdmin:
+    def test_requires_admin(self, student_token):
+        for path in ("/admin/services", "/admin/service-enquiries", "/admin/waitlist"):
+            r_anon = requests.get(f"{API}{path}")
+            assert r_anon.status_code in (401, 403)
+            r_s = requests.get(f"{API}{path}", headers=_h(student_token))
+            assert r_s.status_code == 403
+
+    def test_services_crud(self, admin_token):
+        key = f"test-pkg-{uuid.uuid4().hex[:6]}"
+        body = {"key": key, "name": "TEST PKG", "tagline": "t", "description": "d",
+                "inclusions": ["a", "b"], "duration_label": "4w", "price_cents": 100000,
+                "gst_treatment": "ex_gst", "sort_order": 99, "status": "draft",
+                "cta_type": "enquire"}
+        r = requests.post(f"{API}/admin/services", json=body, headers=_h(admin_token))
+        assert r.status_code == 200, r.text
+        created = r.json()
+        sid = created["id"]
+        assert created["key"] == key
+
+        # duplicate -> 400
+        r_dup = requests.post(f"{API}/admin/services", json=body, headers=_h(admin_token))
+        assert r_dup.status_code == 400
+
+        # update
+        upd = {**body, "name": "TEST PKG UPDATED", "status": "published"}
+        r2 = requests.put(f"{API}/admin/services/{sid}", json=upd, headers=_h(admin_token))
+        assert r2.status_code == 200
+        assert r2.json()["name"] == "TEST PKG UPDATED"
+        # verify list
+        lst = requests.get(f"{API}/admin/services", headers=_h(admin_token)).json()
+        assert any(s["id"] == sid and s["status"] == "published" for s in lst)
+
+        # delete
+        rd = requests.delete(f"{API}/admin/services/{sid}", headers=_h(admin_token))
+        assert rd.status_code == 200
+
+        lst2 = requests.get(f"{API}/admin/services", headers=_h(admin_token)).json()
+        assert all(s["id"] != sid for s in lst2)
+
+    def test_mark_enquiry_contacted(self, admin_token):
+        em = f"enq2_{uuid.uuid4().hex[:6]}@example.com"
+        requests.post(f"{API}/service-enquiries",
+                      json={"name": "T", "email": em, "consent": True, "message": "x"})
+        lst = requests.get(f"{API}/admin/service-enquiries", headers=_h(admin_token)).json()
+        rec = next(e for e in lst if e["email"] == em)
+        assert rec["contacted"] is False
+        r = requests.patch(f"{API}/admin/service-enquiries/{rec['id']}?contacted=true",
+                           headers=_h(admin_token))
+        assert r.status_code == 200
+        lst2 = requests.get(f"{API}/admin/service-enquiries", headers=_h(admin_token)).json()
+        rec2 = next(e for e in lst2 if e["email"] == em)
+        assert rec2["contacted"] is True
