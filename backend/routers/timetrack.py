@@ -102,6 +102,14 @@ async def update_client(cid: str, body: ClientIn):
     return await db.coaching_clients.find_one({"id": cid}, NO_ID)
 
 
+@router.delete("/clients/{cid}")
+async def delete_client(cid: str):
+    await db.client_engagements.delete_many({"client_id": cid})
+    await db.time_entries.delete_many({"client_id": cid})
+    await db.coaching_clients.delete_one({"id": cid})
+    return {"ok": True}
+
+
 @router.post("/clients/{cid}/engagements")
 async def add_engagement(cid: str, body: EngagementIn):
     if not await db.coaching_clients.find_one({"id": cid}):
@@ -116,6 +124,12 @@ async def add_engagement(cid: str, body: EngagementIn):
 async def update_engagement(eid: str, body: EngagementIn):
     await db.client_engagements.update_one({"id": eid}, {"$set": body.model_dump()})
     return await db.client_engagements.find_one({"id": eid}, NO_ID)
+
+
+@router.delete("/engagements/{eid}")
+async def delete_engagement(eid: str):
+    await db.client_engagements.delete_one({"id": eid})
+    return {"ok": True}
 
 
 # ---------- categories ----------

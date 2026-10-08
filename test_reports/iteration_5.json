@@ -1,0 +1,33 @@
+{
+  "summary": "Prompt G2 (admin time-tracking finish) fully verified end-to-end. Backend: 7/7 new pytests pass (package-required create_client → 400, auto-engagement on create, unknown-package rejected, category & billable filters work on /api/admin/time/entries, PUT recomputes duration, GET /api/admin/time/profitability returns price/hours/rate, cleanup). Frontend: Admin login OK; TimerBar renders on every /admin route (/admin, /admin/time, /admin/clients, /admin/students). Clients: creating without a package keeps form open (no save); creating with package 'career-coaching-essentials' saves and client detail shows one auto-engagement with a per-engagement Start timer button that fires the top timer bar (dispatch 'start-timer' CustomEvent). /admin/clients?open=<id> auto-opens the matching drawer. Students: student detail drawer shows a 'Coach time' section with Start timer button that starts a student timer. Time page: manual Add entry works via duration-minutes AND via start/end times; inline Edit (pencil) updates desc & duration; Continue (play) starts prefilled timer; Delete removes entry; Billable=no filter correctly reduces list; View toggle Week shows per-subject rows with Mon–Sun columns, clicking a week-cell opens entry form prefilled; CSV export downloads 'time-entries-YYYY-MM-DD.csv'; Profitability table rendered with 4 rows (one per engagement) including rate column.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_timetrack_g2.py",
+    "/app/test_reports/pytest/g2_results.xml"
+  ],
+  "action_items": [
+    "None blocking. Optional: timer-add-package inline link ([data-testid=timer-add-package]) is wired correctly in TimerBar.jsx but hard to reach via UI because backend now always auto-creates an engagement on client creation — the link only surfaces if an admin later removes/deactivates all engagements. Consider rendering it only when picked.engagements.length===0 OR adding a UI path to delete engagements for a complete end-to-end demo."
+  ],
+  "critical_code_review_comments": [
+    "backend/routers/timetrack.py update_client/update_engagement return docs via find_one without NO_ID projection on lines 102 & 118 — risk of ObjectId being returned (motor adds _id post-update). Add NO_ID projection. (Carried over from iteration_4 — still unfixed.)",
+    "No DELETE endpoints for coaching_clients or client_engagements — test data accumulates (TEST_UIG2* clients remain in DB after cleanup).",
+    "TimerBar.jsx line 47 fetches full /admin/clients list for every keystroke in search — no server-side ?q= param; fine at small scale but O(N) over the network per keypress.",
+    "AdminTime.jsx: 'profitability' endpoint is re-fetched together with entries on every filter change (useEffect on filters) — profitability does not depend on filters and could be fetched once.",
+    "create_client auto-engagement uses `now_iso()[:10]` for start_date but inserts without reading pkg hours_included consistency check — acceptable.",
+    "list_entries date_from/date_to filter is done in Python (post-fetch) over up to 2000 rows — fine now, consider pushing into Mongo query for scale."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_timetrack_g2.py (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "andrew.phan723@gmail.com / WinnieAdmin2026! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "pytest G2 created 1 TEST_G2 Pkg client (career-coaching-essentials) + 2 time entries; entries deleted on cleanup; client remains (no DELETE endpoint). UI test created 1 'TEST_UIG2 <ts>' client + a handful of TEST_UIG2 entries; entries cleaned via admin API DELETE at end of run (2 deleted). Clients remain in DB (safe to ignore or manually clean).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Prompt G2 verified end-to-end. All 13 features in the review request pass. Watchouts for next iteration: (1) no DELETE for coaching_clients/engagements → TEST_ clients accumulate; (2) update_client/update_engagement responses may leak Mongo _id (still unfixed from iteration_4 feedback); (3) timer-add-package link exists in code but is practically unreachable now that every created client gets an auto-engagement — fine functionally."
+}

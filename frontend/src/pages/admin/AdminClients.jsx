@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Plus, Play } from "lucide-react";
+import { Plus, Play, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { api, fmtDate, errMsg } from "@/lib/api";
 import { Spinner } from "@/components/Shared";
@@ -33,6 +33,7 @@ export default function AdminClients() {
     try { await api.post("/admin/clients", nc); toast.success("Client added"); setAdding(false); setNc({ first_name: "", last_name: "", email: "", phone: "", status: "active", service_package_key: "" }); load(); } catch (e) { toast.error(errMsg(e)); }
   };
   const addEng = async () => { try { await api.post(`/admin/clients/${sel.id}/engagements`, eng); toast.success("Engagement added"); setEng({ service_package_key: "", start_date: "", notes: "" }); open(sel); load(); } catch (e) { toast.error(errMsg(e)); } };
+  const delClient = async () => { if (!window.confirm(`Delete ${sel.first_name} ${sel.last_name} and all their time entries?`)) return; try { await api.delete(`/admin/clients/${sel.id}`); toast.success("Client deleted"); setSel(null); load(); } catch (e) { toast.error(errMsg(e)); } };
   const startTimer = (e) => window.dispatchEvent(new CustomEvent("start-timer", { detail: { subject_type: "client", client_id: sel.id, engagement_id: e.id, billable: true, description: "", category: "" } }));
 
   if (!rows) return <Spinner />;
@@ -79,7 +80,10 @@ export default function AdminClients() {
       <Modal open={!!sel} onClose={() => setSel(null)} title={sel ? `${sel.first_name} ${sel.last_name}` : ""} wide>
         {sel && (
           <div className="space-y-6 text-sm">
-            <div className="text-slate-500">{sel.email} · {sel.phone || "no phone"} · {hrs((sel.entries || []).reduce((s, e) => s + e.duration_minutes, 0))} logged</div>
+            <div className="flex items-center justify-between">
+              <div className="text-slate-500">{sel.email} · {sel.phone || "no phone"} · {hrs((sel.entries || []).reduce((s, e) => s + e.duration_minutes, 0))} logged</div>
+              <button onClick={delClient} className="inline-flex items-center gap-1 text-xs text-red-600 hover:underline" data-testid="client-delete"><Trash2 size={13} /> Delete</button>
+            </div>
             <div>
               <div className="eyebrow mb-2">Engagements</div>
               <ul className="divide-y border rounded-lg mb-3">

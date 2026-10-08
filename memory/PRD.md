@@ -49,6 +49,16 @@ Premium LMS + e-commerce for working professionals: course catalog, Stripe one-t
 - Frontend: `TimerBar` (fixed in admin layout), `AdminTime` (summary cards + All/Clients/Students/Internal tabs + day-grouped entries + delete + by-category), `AdminClients` (list w/ hours-used-vs-included bar + detail w/ engagements & entries), sidebar Clients+Time, Dashboard "Hours this week" card, Students "Coach time" column.
 - Deferred (not built): week-grid view, CSV export, submission-review start-timer shortcut, DELETE endpoint for clients. Tested iteration_4: 12/12 backend pytest + all frontend flows pass.
 
+### Phase G2 — time-tracking finish (2026-10-08)
+- Backend (`routers/timetrack.py`): `create_client` now REQUIRES `service_package_key` → auto-creates an active engagement (400 if missing/unknown). `list_entries` gained `category` + `billable` query filters. New `GET /api/admin/time/profitability` (per-engagement price_cents ÷ hours = effective $/h). New `DELETE /api/admin/clients/{id}` (cascades engagements + time entries) and `DELETE /api/admin/engagements/{id}`.
+- Frontend:
+  - `TimerBar`: listens for window `start-timer` CustomEvent so external buttons start the timer instantly (no refresh); inline "No package — add one" link → `/admin/clients?open=<id>`.
+  - `AdminStudents`: student drawer "Coach time" section (total hrs + last 10 entries) + Start-timer button.
+  - `AdminClients`: package required in new-client form; per-engagement Start-timer button; `?open=` auto-opens a client; delete-client button.
+  - `AdminTime`: manual Add/Edit entry modal (date, start/end OR duration, subject+engagement, category, billable), inline edit + Continue (restart timer) + delete, List/Week toggle (week grid Mon–Sun, clickable cells prefill add form), filters (date range/category/billable), CSV export, client-profitability table.
+  - Timer bar shows on every /admin page incl. dashboard, flex-wraps on mobile.
+- Tested iteration_5: 7/7 new backend pytest + all 13 frontend flows pass (100%/100%).
+
 ## Backlog / Roadmap
 
 ### UI redesign — Candace-Owens model (2026-10-08, in progress)
