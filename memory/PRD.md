@@ -38,10 +38,16 @@ Premium LMS + e-commerce for working professionals: course catalog, Stripe one-t
 - Frontend AdminStudents: status filter tabs (All/Active/At risk/Completed w/ counts), progress-bar + lessons + last-active + status columns; detail modal gets 4-metric header, per-course module-by-module progress, activity timeline, admin notes. AdminDashboard: 2 new stat cards (At risk, Avg completion).
 - At-risk = active enrollments + no activity 7+ days. Tested iteration_3: 7/7 backend pytest + all frontend flows pass.
 
+### Phase E — /start personalised prospect landing (2026-10-08)
+- Public `/start` route (not in nav). Reads `?name=` + `?lead=`; greets "Hi {name}" (fallback "Hi there"). Reveals REAL coaching package pricing via `servicePrice` helper (bypasses the public POA hiding — this is the prospect-only pricing reveal the user wanted).
+- Primary CTA "Book your strategy call" → CALENDLY_URL in new tab with `utm_content=<lead>`; secondary "Pay deposit" → STRIPE_DEPOSIT_URL; both hidden until their env vars (REACT_APP_CALENDLY_URL / REACT_APP_STRIPE_DEPOSIT_URL) are set — fallback shows "Enquire with Winnie" → /contact.
+- Each visit with a `lead` param is logged: POST /api/lead-visits → `lead_visits` collection. Admin → Services now has a 4th "Lead visits" tab (GET /api/admin/lead-visits).
+- Self-tested: lead-visit logging + admin list via curl; /start render (greeting + revealed pricing + fallback CTA) via screenshot. Note: the broader "automation front" (Typeform→Make.com→Gamma CDP→Google Sheets) in Andrew's As-Built doc is EXTERNAL SaaS, not in this app's scope — the platform only provides the /start endpoint.
+
 ## Backlog / Roadmap
 - P0: Bunny Stream credentials (BUNNY_LIBRARY_ID, BUNNY_STREAM_API_KEY, BUNNY_TOKEN_AUTH_KEY) → verify upload + signed embed. (Pending user keys.)
 - P0: Revised "automation front" MD — user referenced a local Downloads MD that was NOT uploaded; re-request before building Phase E.
 - P1 (Build Plan Phase C): Student performance tracker — DONE 2026-10-08 (iteration_3).
 - P1 (Phase D): Written-activity lesson type + submissions queue + coach review (+ AI "Suggest feedback" via Emergent LLM key / Claude — user approved).
-- P1 (Phase E): /start personalised landing (?name=&lead=), Calendly + Stripe deposit (needs REACT_APP_CALENDLY_URL, REACT_APP_STRIPE_DEPOSIT_URL). BLOCKED on automation MD.
+- P1 (Phase E): /start personalised landing — DONE 2026-10-08. To activate CTAs, set REACT_APP_CALENDLY_URL and REACT_APP_STRIPE_DEPOSIT_URL in frontend/.env.
 - P2 hardening (pre-launch): rate-limit/captcha on public enquiry+waitlist; EmailStr validation; optional API-layer price masking for anonymous callers; completion certificates; SEO/OG per course.

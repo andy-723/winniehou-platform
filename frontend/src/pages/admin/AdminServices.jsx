@@ -13,12 +13,14 @@ export default function AdminServices() {
   const [pkgs, setPkgs] = useState(null);
   const [enq, setEnq] = useState(null);
   const [wl, setWl] = useState(null);
+  const [leads, setLeads] = useState(null);
   const [edit, setEdit] = useState(null);
 
   const loadPkgs = () => api.get("/admin/services").then((r) => setPkgs(r.data));
   const loadEnq = () => api.get("/admin/service-enquiries").then((r) => setEnq(r.data));
   const loadWl = () => api.get("/admin/waitlist").then((r) => setWl(r.data));
-  useEffect(() => { loadPkgs(); loadEnq(); loadWl(); }, []);
+  const loadLeads = () => api.get("/admin/lead-visits").then((r) => setLeads(r.data));
+  useEffect(() => { loadPkgs(); loadEnq(); loadWl(); loadLeads(); }, []);
 
   const save = async () => {
     try {
@@ -36,13 +38,13 @@ export default function AdminServices() {
   const del = async (id) => { if (!window.confirm("Delete this package?")) return; await api.delete(`/admin/services/${id}`); toast.success("Deleted"); loadPkgs(); };
   const markContacted = async (e) => { await api.patch(`/admin/service-enquiries/${e.id}?contacted=${!e.contacted}`); loadEnq(); };
 
-  if (!pkgs || !enq || !wl) return <Spinner />;
+  if (!pkgs || !enq || !wl || !leads) return <Spinner />;
   const Tab = ({ id, label, n }) => <button onClick={() => setTab(id)} data-testid={`services-tab-${id}`} className={`px-4 py-2 text-sm rounded-lg transition-colors ${tab === id ? "bg-[#0A192F] text-amber-300" : "text-slate-600 hover:bg-stone-100"}`}>{label}{n != null && ` (${n})`}</button>;
 
   return (
     <div data-testid="admin-services">
       <AdminHeader title="Services" sub="Coaching packages, enquiries and the 1-on-1 waitlist" right={tab === "packages" && <button onClick={() => setEdit({ ...blank })} className="btn-navy !py-2 !text-sm" data-testid="add-package-btn"><Plus size={15} /> New package</button>} />
-      <div className="flex gap-2 mb-6"><Tab id="packages" label="Packages" n={pkgs.length} /><Tab id="enquiries" label="Enquiries" n={enq.length} /><Tab id="waitlist" label="1-on-1 waitlist" n={wl.length} /></div>
+      <div className="flex gap-2 mb-6"><Tab id="packages" label="Packages" n={pkgs.length} /><Tab id="enquiries" label="Enquiries" n={enq.length} /><Tab id="waitlist" label="1-on-1 waitlist" n={wl.length} /><Tab id="leads" label="Lead visits" n={leads.length} /></div>
 
       {tab === "packages" && <Table cols={["Name", "Price", "GST", "CTA", "Status", "Order", ""]} rows={pkgs} testId="packages-table" render={(p) => (
         <tr key={p.id} data-testid={`package-row-${p.key}`}>
@@ -69,6 +71,10 @@ export default function AdminServices() {
 
       {tab === "waitlist" && <Table cols={["Date", "Name", "Email", "Source"]} rows={wl} testId="waitlist-table" render={(w) => (
         <tr key={w.id} data-testid={`waitlist-row-${w.id}`}><td className="px-4 py-3 text-slate-500">{fmtDate(w.created_at)}</td><td className="px-4 py-3">{w.name}</td><td className="px-4 py-3">{w.email}</td><td className="px-4 py-3">{w.source}</td></tr>
+      )} />}
+
+      {tab === "leads" && <Table cols={["Date", "Name", "Lead ID"]} rows={leads} testId="leads-table" render={(l) => (
+        <tr key={l.id} data-testid={`lead-row-${l.id}`}><td className="px-4 py-3 text-slate-500">{fmtDate(l.created_at)}</td><td className="px-4 py-3">{l.name || "—"}</td><td className="px-4 py-3 font-mono text-xs">{l.lead}</td></tr>
       )} />}
 
       <Modal open={!!edit} onClose={() => setEdit(null)} title={edit?.id ? "Edit package" : "New package"} wide>

@@ -78,6 +78,17 @@ async def join_waitlist(body: WaitlistIn):
     return {"ok": True}
 
 
+class LeadVisitIn(BaseModel):
+    lead: str
+    name: str = ""
+
+
+@router.post("/lead-visits")
+async def log_lead_visit(body: LeadVisitIn):
+    await db.lead_visits.insert_one({"id": new_id(), "lead": body.lead, "name": body.name, "created_at": now_iso()})
+    return {"ok": True}
+
+
 async def _user_from_query(auth: Optional[str]) -> Optional[dict]:
     if not auth:
         return None

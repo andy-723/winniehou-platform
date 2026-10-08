@@ -9,6 +9,7 @@ import Home from "@/pages/Home";
 import About from "@/pages/About";
 import Services from "@/pages/Services";
 import Contact from "@/pages/Contact";
+import Start from "@/pages/Start";
 import Catalog from "@/pages/Catalog";
 import CourseDetail from "@/pages/CourseDetail";
 import Player from "@/pages/Player";
@@ -58,6 +59,7 @@ export default function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/start" element={<Start />} />
                 <Route path="/courses" element={<Catalog />} />
                 <Route path="/courses/:slug" element={<CourseDetail />} />
                 <Route path="/shop" element={<Shop />} />

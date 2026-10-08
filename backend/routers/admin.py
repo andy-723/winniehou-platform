@@ -539,3 +539,8 @@ async def mark_enquiry(eid: str, contacted: bool = True):
 @router.get("/waitlist")
 async def admin_waitlist():
     return await db.waitlist.find({}, NO_ID).sort("created_at", -1).to_list(1000)
+
+
+@router.get("/lead-visits")
+async def admin_lead_visits():
+    return await db.lead_visits.find({}, NO_ID).sort("created_at", -1).to_list(1000)
