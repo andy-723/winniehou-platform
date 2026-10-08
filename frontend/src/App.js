@@ -28,6 +28,7 @@ import AdminStudents from "@/pages/admin/AdminStudents";
 import AdminServices from "@/pages/admin/AdminServices";
 import AdminClients from "@/pages/admin/AdminClients";
 import AdminTime from "@/pages/admin/AdminTime";
+import AdminReports from "@/pages/admin/AdminReports";
 import AdminOrders from "@/pages/admin/AdminOrders";
 import AdminCoupons from "@/pages/admin/AdminCoupons";
 import AdminProducts from "@/pages/admin/AdminProducts";
@@ -93,6 +94,7 @@ export default function App() {
                   <Route path="services" element={<AdminServices />} />
                   <Route path="clients" element={<AdminClients />} />
                   <Route path="time" element={<AdminTime />} />
+                  <Route path="reports" element={<AdminReports />} />
                   <Route path="orders" element={<AdminOrders />} />
                   <Route path="coupons" element={<AdminCoupons />} />
                   <Route path="products" element={<AdminProducts />} />
