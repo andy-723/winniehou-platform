@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { DollarSign, Users, BookOpen, RotateCcw } from "lucide-react";
+import { DollarSign, Users, BookOpen, RotateCcw, AlertTriangle, TrendingUp } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
 import { api, fmt, fmtDate } from "@/lib/api";
 import { Spinner } from "@/components/Shared";
@@ -14,6 +14,8 @@ export default function AdminDashboard() {
   const stats = [
     { label: "Revenue", value: fmt(d.revenue), icon: DollarSign, sub: `${d.orders} paid orders` },
     { label: "Active students", value: d.active_students, icon: Users, sub: `${d.students} registered` },
+    { label: "At risk", value: d.at_risk_students, icon: AlertTriangle, sub: "no activity 7+ days" },
+    { label: "Avg completion", value: `${d.avg_completion}%`, icon: TrendingUp, sub: "across enrolled" },
     { label: "Courses", value: d.published_courses, icon: BookOpen, sub: `${d.courses} total` },
     { label: "Refunded", value: fmt(d.refunded), icon: RotateCcw, sub: "lifetime" },
   ];
@@ -21,7 +23,7 @@ export default function AdminDashboard() {
   return (
     <div data-testid="admin-dashboard">
       <AdminHeader title="Dashboard" sub="A snapshot of how the academy is performing." />
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
         {stats.map((s) => (
           <div key={s.label} className="card-lux p-6" data-testid={`stat-${s.label.toLowerCase().replace(" ", "-")}`}>
             <div className="flex justify-between items-start"><div className="eyebrow">{s.label}</div><s.icon size={16} className="text-amber-600" /></div>

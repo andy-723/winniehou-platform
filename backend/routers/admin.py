@@ -5,7 +5,9 @@ import httpx
 import stripe
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
+from datetime import datetime, timezone, timedelta
 from core import db, require_admin, new_id, now_iso, slugify, put_object, APP_NAME
+from routers.courses import compute_progress
 
 logger = logging.getLogger("lms.admin")
 router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(require_admin)])
@@ -13,6 +15,81 @@ router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(re
 BUNNY_LIBRARY_ID = os.environ.get("BUNNY_LIBRARY_ID", "")
 BUNNY_KEY = os.environ.get("BUNNY_STREAM_API_KEY", "")
 NO_ID = {"_id": 0}
+
+
+# ---------- student metrics helpers ----------
+def _parse_dt(s):
+    if not s:
+        return None
+    try:
+        dt = datetime.fromisoformat(s)
+        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
+    except Exception:
+        return None
+
+
+async def student_metrics(user_id: str):
+    enrs = await db.enrollments.find({"user_id": user_id, "active": True}, NO_ID).to_list(200)
+    total = done = 0
+    per_course = []
+    last_active = None
+    for e in enrs:
+        course = await db.courses.find_one({"id": e["course_id"]}, NO_ID)
+        if not course:
+            continue
+        prog = await compute_progress(user_id, course)
+        total += prog["total"]
+        done += prog["completed"]
+        titles = {m["id"]: m.get("title", "") for m in course.get("modules", [])}
+        per_course.append({
+            "course_id": course["id"], "course_title": course.get("title", ""),
+            "percent": prog["percent"], "completed": prog["completed"], "total": prog["total"],
+            "modules": [{**m, "title": titles.get(m["module_id"], "")} for m in prog["modules"]],
+        })
+        la = _parse_dt(e.get("last_accessed"))
+        if la and (last_active is None or la > last_active):
+            last_active = la
+    latest = await db.progress.find({"user_id": user_id}, {"_id": 0, "updated_at": 1}).sort("updated_at", -1).limit(1).to_list(1)
+    if latest:
+        la = _parse_dt(latest[0].get("updated_at"))
+        if la and (last_active is None or la > last_active):
+            last_active = la
+    percent = round(done / total * 100) if total else 0
+    now = datetime.now(timezone.utc)
+    if enrs and total and percent >= 100:
+        status = "completed"
+    elif enrs and (last_active is None or (now - last_active) > timedelta(days=7)):
+        status = "at_risk"
+    else:
+        status = "active"
+    return {"percent": percent, "lessons_completed": done, "lessons_total": total,
+            "last_active": last_active.isoformat() if last_active else None,
+            "status": status, "per_course": per_course}
+
+
+async def student_timeline(user_id: str, limit: int = 30):
+    events = []
+    prog = await db.progress.find({"user_id": user_id, "completed": True}, NO_ID).sort("updated_at", -1).limit(50).to_list(50)
+    cache = {}
+    for p in prog:
+        cid = p.get("course_id")
+        if cid not in cache:
+            cache[cid] = await db.courses.find_one({"id": cid}, NO_ID)
+        c = cache[cid]
+        title = "a lesson"
+        if c:
+            for mm in c.get("modules", []):
+                for l in mm.get("lessons", []):
+                    if l["id"] == p.get("lesson_id"):
+                        title = l.get("title", title)
+        events.append({"type": "lesson", "label": f"Completed “{title}”", "at": p.get("updated_at")})
+    orders = await db.orders.find({"user_id": user_id, "status": {"$in": ["paid", "refunded"]}}, NO_ID).sort("created_at", -1).limit(20).to_list(20)
+    for o in orders:
+        items = ", ".join(i.get("title", "item") for i in o.get("items", [])) or "an order"
+        events.append({"type": "purchase", "label": f"Purchased {items}", "at": o.get("created_at")})
+    events = [e for e in events if e.get("at")]
+    events.sort(key=lambda e: e["at"], reverse=True)
+    return events[:limit]
 
 
 # ---------- dashboard ----------
@@ -34,10 +111,20 @@ async def dashboard():
         c = await db.courses.find_one({"id": t["_id"]}, {"_id": 0, "title": 1, "id": 1, "price": 1})
         if c:
             top_courses.append({**c, "enrollments": t["count"]})
+    enrolled_ids = await db.enrollments.distinct("user_id", {"active": True})
+    at_risk = 0
+    pct_sum = 0
+    for uid in enrolled_ids:
+        m = await student_metrics(uid)
+        if m["status"] == "at_risk":
+            at_risk += 1
+        pct_sum += m["percent"]
+    avg_completion = round(pct_sum / len(enrolled_ids)) if enrolled_ids else 0
     return {
         "revenue": revenue, "refunded": refunded, "orders": len([o for o in paid if o["status"] == "paid"]),
         "students": await db.users.count_documents({"role": "student"}),
-        "active_students": len(await db.enrollments.distinct("user_id", {"active": True})),
+        "active_students": len(enrolled_ids),
+        "at_risk_students": at_risk, "avg_completion": avg_completion,
         "courses": await db.courses.count_documents({}), "published_courses": await db.courses.count_documents({"published": True}),
         "monthly": [{"month": k, "revenue": v} for k, v in sorted(monthly.items())][-12:],
         "top_courses": top_courses,
@@ -186,6 +273,11 @@ async def students(q: Optional[str] = None):
         u["enrollments"] = await db.enrollments.count_documents({"user_id": u["id"], "active": True})
         u["spent"] = sum(o["total"] for o in await db.orders.find({"user_id": u["id"], "status": "paid"}, {"_id": 0, "total": 1}).to_list(500))
         u["sessions"] = await db.sessions.count_documents({"user_id": u["id"]})
+        m = await student_metrics(u["id"])
+        u["progress_percent"] = m["percent"]
+        u["lessons_completed"] = m["lessons_completed"]
+        u["last_active"] = m["last_active"]
+        u["status"] = m["status"]
     return rows
 
 
@@ -201,6 +293,9 @@ async def student_detail(user_id: str):
     u["enrollments"] = enr
     u["orders"] = await db.orders.find({"user_id": user_id}, NO_ID).sort("created_at", -1).to_list(100)
     u["sessions"] = await db.sessions.find({"user_id": user_id}, NO_ID).to_list(10)
+    u["metrics"] = await student_metrics(user_id)
+    u["timeline"] = await student_timeline(user_id)
+    u["admin_notes"] = u.get("admin_notes", "")
     return u
 
 
@@ -209,6 +304,7 @@ class StudentPatch(BaseModel):
     grant_course_id: Optional[str] = None
     revoke_course_id: Optional[str] = None
     clear_sessions: bool = False
+    notes: Optional[str] = None
 
 
 @router.patch("/students/{user_id}")
@@ -225,6 +321,8 @@ async def patch_student(user_id: str, body: StudentPatch):
         await db.enrollments.update_one({"user_id": user_id, "course_id": body.revoke_course_id}, {"$set": {"active": False}})
     if body.clear_sessions:
         await db.sessions.delete_many({"user_id": user_id})
+    if body.notes is not None:
+        await db.users.update_one({"id": user_id}, {"$set": {"admin_notes": body.notes}})
     return {"ok": True}
 
 
