@@ -4,6 +4,7 @@ import { ArrowRight, Award, Globe2, MonitorPlay } from "lucide-react";
 import { api } from "@/lib/api";
 import { CourseCard, ContentRow, MembershipBand } from "@/components/Shared";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
+import { FullScreenScrollFX } from "@/components/ui/full-screen-scroll-fx";
 
 const CHIPS = ["Career strategist", "Interview coach", "Business English"];
 const INDEX = [
@@ -67,6 +68,87 @@ function SideFrame({ slot, side }) {
   );
 }
 
+function employerLabel(right, confirmed) {
+  const parts = String(right || "").split("·").map((s) => s.trim()).filter(Boolean);
+  const kept = parts.filter((part) => confirmed.some((name) => {
+    const n = name.toLowerCase();
+    const p = part.toLowerCase();
+    return n === p || n.startsWith(`${p} `) || n.startsWith(`${p}(`);
+  }));
+  return kept.join(" · ");
+}
+
+function useDesktopFx() {
+  const [on, setOn] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(min-width: 1024px)").matches && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
+  useEffect(() => {
+    const wide = window.matchMedia("(min-width: 1024px)");
+    const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setOn(wide.matches && !reduceMq.matches);
+    apply();
+    wide.addEventListener("change", apply);
+    reduceMq.addEventListener("change", apply);
+    return () => {
+      wide.removeEventListener("change", apply);
+      reduceMq.removeEventListener("change", apply);
+    };
+  }, []);
+  return on;
+}
+
+const FX_COLORS = {
+  text: "#F3EEE4",
+  overlay: "rgba(14,25,43,0.55)",
+  pageBg: "#0E192B",
+  stageBg: "#0E192B",
+};
+
+function Industries({ panels, confirmed }) {
+  const desktopFx = useDesktopFx();
+  if (!panels || panels.length < 3) return null;
+  const sections = panels.map((p) => ({
+    id: p.id,
+    background: p.image_url,
+    alt: p.alt || "",
+    title: p.title,
+    leftLabel: p.left_label,
+    rightLabel: employerLabel(p.right_label, confirmed),
+  }));
+  return (
+    <section className="bg-[#0A192F]" data-testid="industries-section">
+      <div className="px-6 pt-16 pb-6 text-center">
+        <div className="font-mono text-[11px] tracking-[0.24em] text-[#9FB0C8]">WHERE CLIENTS GO NEXT</div>
+        <h2 className="font-serif text-4xl sm:text-5xl text-[#F9F8F3] mt-3">One coach. Many industries.</h2>
+      </div>
+      {desktopFx ? (
+        <FullScreenScrollFX
+          sections={sections}
+          colors={FX_COLORS}
+          bgTransition="fade"
+          durations={{ change: 0.7, snap: 800 }}
+          showProgress
+          footer={<Link to="/book?src=website" data-testid="industries-book">Book a discovery call →</Link>}
+          ariaLabel="Industries"
+        />
+      ) : (
+        <div className="max-w-6xl mx-auto px-6 pb-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-8" data-testid="industries-fallback">
+          {sections.map((s) => (
+            <article key={s.id}>
+              <img src={s.background} alt={s.alt} width="800" height="1000" className="aspect-[4/5] w-full object-cover bg-[#0E192B]" />
+              <h3 className="font-serif font-bold text-2xl text-[#F9F8F3] mt-4">{s.title}</h3>
+              <p className="mt-2 text-[15px] font-semibold uppercase tracking-[0.12em] text-[#F3EEE4]" style={{ fontFamily: "Inter, Manrope, sans-serif" }}>{s.leftLabel}</p>
+              {s.rightLabel && <p className="mt-1 text-[15px] font-semibold uppercase tracking-[0.12em] text-[#D4AF37]" style={{ fontFamily: "Inter, Manrope, sans-serif" }}>{s.rightLabel}</p>}
+            </article>
+          ))}
+          <Link to="/book?src=website" className="text-sm font-semibold text-[#D4AF37]" data-testid="industries-book">Book a discovery call →</Link>
+        </div>
+      )}
+    </section>
+  );
+}
+
 function LogoRow({ logos }) {
   return logos.map((l) => (
     <img key={l.id} src={l.logo_url} alt={l.alt || l.name} className="h-[26px] min-[860px]:h-9 w-auto opacity-65 hover:opacity-100 [filter:brightness(0)_invert(1)]" />
@@ -76,10 +158,12 @@ function LogoRow({ logos }) {
 export default function Home() {
   const [courses, setCourses] = useState([]);
   const [hero, setHero] = useState(null);
+  const [industries, setIndustries] = useState({ panels: [], confirmed_employers: [] });
   const [gap, setGap] = useState(80);
   const reduce = useReducedMotion();
 
   useEffect(() => { api.get("/courses").then((r) => setCourses(r.data)).catch(() => {}); }, []);
+  useEffect(() => { api.get("/industry-panels").then((r) => setIndustries(r.data)).catch(() => {}); }, []);
   useEffect(() => {
     api.get("/homepage").then((r) => setHero(r.data)).catch(() => setHero({ placements: [], portrait: emptySlot, portrait_mobile: emptySlot, side_left: emptySlot, side_right: emptySlot }));
   }, []);
@@ -178,6 +262,8 @@ export default function Home() {
           <p className="text-[11px] text-[#9FB0C8] text-center mt-5 px-6">Logos are trademarks of their owners and show where clients have been employed. They don't imply endorsement.</p>
         </section>
       )}
+
+      <Industries panels={industries.panels} confirmed={industries.confirmed_employers || []} />
 
       <div className="border-y border-[#D4AF37]/10 bg-[#050E1E]" data-testid="home-stats">
         <div className="max-w-7xl mx-auto px-6 py-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-6 text-sm">

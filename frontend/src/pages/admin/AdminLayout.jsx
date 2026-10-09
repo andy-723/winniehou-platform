@@ -1,5 +1,5 @@
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Users, Receipt, Ticket, Package, Newspaper, ExternalLink, HeartHandshake, UserCog, Timer, BarChart3, Contact2, Image, Building2 } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, Receipt, Ticket, Package, Newspaper, ExternalLink, HeartHandshake, UserCog, Timer, BarChart3, Contact2, Image, Building2, Layers } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import TimerBar from "@/components/TimerBar";
 
@@ -7,6 +7,7 @@ const items = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/admin/hero", label: "Homepage hero", icon: Image },
   { to: "/admin/placements", label: "Client placements", icon: Building2 },
+  { to: "/admin/industries", label: "Industry panels", icon: Layers },
   { to: "/admin/courses", label: "Courses", icon: BookOpen },
   { to: "/admin/services", label: "Services", icon: HeartHandshake },
   { to: "/admin/students", label: "Students", icon: Users },

@@ -621,3 +621,40 @@ async def update_placement(pid: str, body: PlacementIn):
 async def delete_placement(pid: str):
     await db.client_placements.delete_one({"id": pid})
     return {"ok": True}
+
+
+class IndustryPanelIn(BaseModel):
+    title: str
+    left_label: str = ""
+    right_label: str = ""
+    image_url: str = ""
+    alt: str = ""
+    sort_order: int = 0
+    published: bool = False
+
+
+@router.get("/industry-panels")
+async def admin_industry_panels():
+    return await db.industry_panels.find({}, NO_ID).sort("sort_order", 1).to_list(100)
+
+
+@router.post("/industry-panels")
+async def create_industry_panel(body: IndustryPanelIn):
+    doc = {**body.model_dump(), "id": new_id(), "created_at": now_iso(), "updated_at": now_iso()}
+    await db.industry_panels.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+@router.put("/industry-panels/{pid}")
+async def update_industry_panel(pid: str, body: IndustryPanelIn):
+    res = await db.industry_panels.update_one({"id": pid}, {"$set": {**body.model_dump(), "updated_at": now_iso()}})
+    if not res.matched_count:
+        raise HTTPException(404, "Panel not found")
+    return await db.industry_panels.find_one({"id": pid}, NO_ID)
+
+
+@router.delete("/industry-panels/{pid}")
+async def delete_industry_panel(pid: str):
+    await db.industry_panels.delete_one({"id": pid})
+    return {"ok": True}

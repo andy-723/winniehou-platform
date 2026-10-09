@@ -227,6 +227,25 @@ PLACEMENTS = [
 ]
 
 
+INDUSTRY_PANELS = [
+    {"title": "Banking", "left_label": "Analyst to Associate", "right_label": "Commonwealth Bank", "sort_order": 1},
+    {"title": "The Big Four", "left_label": "Graduate to Consultant", "right_label": "EY · PwC · Deloitte", "sort_order": 2},
+    {"title": "Higher education", "left_label": "Researcher to Lecturer", "right_label": "University of Canberra", "sort_order": 3},
+]
+
+
+async def seed_industries():
+    for panel in INDUSTRY_PANELS:
+        await db.industry_panels.update_one(
+            {"title": panel["title"]},
+            {"$setOnInsert": {
+                **panel, "id": new_id(), "image_url": "", "alt": "",
+                "published": False, "created_at": now_iso(), "updated_at": now_iso(),
+            }},
+            upsert=True,
+        )
+
+
 async def seed_placements():
     for name, order in PLACEMENTS:
         await db.client_placements.update_one(
@@ -265,3 +284,5 @@ async def ensure_indexes():
     await db.time_categories.create_index([("subject_type", 1), ("name", 1)], unique=True)
     await db.client_placements.create_index("id", unique=True)
     await db.client_placements.create_index("name", unique=True)
+    await db.industry_panels.create_index("id", unique=True)
+    await db.industry_panels.create_index("title", unique=True)

@@ -39,6 +39,7 @@ import AdminProducts from "@/pages/admin/AdminProducts";
 import AdminBlog from "@/pages/admin/AdminBlog";
 import AdminHero from "@/pages/admin/AdminHero";
 import AdminPlacements from "@/pages/admin/AdminPlacements";
+import AdminIndustries from "@/pages/admin/AdminIndustries";
 
 const Public = () => (
   <div className="flex flex-col min-h-screen">
@@ -100,6 +101,7 @@ export default function App() {
                   <Route index element={<AdminDashboard />} />
                   <Route path="hero" element={<AdminHero />} />
                   <Route path="placements" element={<AdminPlacements />} />
+                  <Route path="industries" element={<AdminIndustries />} />
                   <Route path="courses" element={<AdminCourses />} />
                   <Route path="courses/:id" element={<CourseEditor />} />
                   <Route path="students" element={<AdminStudents />} />
