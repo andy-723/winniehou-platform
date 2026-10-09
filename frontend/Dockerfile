@@ -2,8 +2,6 @@ FROM node:22-bookworm-slim AS build
 
 WORKDIR /app
 
-RUN npm install -g yarn@1.22.22
-
 COPY package.json ./
 RUN yarn install --network-timeout 600000
 
