@@ -15,12 +15,23 @@ export const DEV_ADMIN = { email: "andrew.phan723@gmail.com", password: "WinnieA
 const aud = (cents) =>
   new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD", maximumFractionDigits: 0 }).format((cents || 0) / 100);
 
+export function formatAud(cents) {
+  return aud(cents);
+}
+
+// Total payable in cents. ex GST packages add 10 percent. Same figure servicePrice shows large.
+export function incGstCents(pkg) {
+  const cents = pkg?.price_cents || 0;
+  if (pkg?.gst_treatment === "ex_gst") return cents + Math.round(cents * 0.1);
+  return cents;
+}
+
 // GST-aware price display for coaching packages.
 export function servicePrice(pkg) {
   const cents = pkg?.price_cents || 0;
+  const total = incGstCents(pkg);
   if (pkg?.gst_treatment === "ex_gst") {
-    const gst = Math.round(cents * 0.1);
-    return { main: `${aud(cents + gst)} inc GST`, sub: `(${aud(cents)} + ${aud(gst)} GST)` };
+    return { main: `${aud(total)} inc GST`, sub: `(${aud(cents)} + ${aud(total - cents)} GST)` };
   }
-  return { main: `${aud(cents)} inc GST`, sub: "" };
+  return { main: `${aud(total)} inc GST`, sub: "" };
 }

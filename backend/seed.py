@@ -122,11 +122,29 @@ POSTS = [
 ]
 
 SERVICE_PACKAGES = [
-    {"key": "career-coaching-essentials", "name": "Career Coaching Essentials", "tagline": "[TAGLINE TO COME]",
+    {"key": "career-coaching-essentials", "name": "Career Coaching Essentials",
+     "tagline": "Get clear on where you're going, then get seen for it.",
+     "description": "For professionals who know they are capable but aren't getting the response they expect. We work out which roles fit your experience in the Australian market, then rebuild how you present yourself so recruiters and hiring managers can see it in the first ten seconds.",
+     "situation_quote": "I'm applying everywhere and hearing nothing back.",
+     "for_you_if": ["You've sent many applications with few or no replies", "Your experience is from overseas and doesn't seem to translate here", "You're changing direction and aren't sure how to position it"],
+     "inclusions": ["Your Career Development Plan", "Resume rewritten for Australian employers and applicant tracking systems", "LinkedIn profile rebuilt so recruiters find you", "A target list of roles and employers, and how to approach them"],
+     "outcomes_intro": "", "duration_label": "",
      "price_cents": 210000, "gst_treatment": "ex_gst", "sort_order": 1, "cta_type": "book_call"},
-    {"key": "interview-for-success", "name": "Interview for Success", "tagline": "[TAGLINE TO COME]",
+    {"key": "interview-for-success", "name": "Interview for Success",
+     "tagline": "Walk in prepared. Walk out remembered.",
+     "description": "For when the interviews are coming but the offers aren't. We practise the questions your target roles will actually ask, shape your experience into clear stories, and rehearse until your answers sound like you on your best day.",
+     "situation_quote": "I'm getting interviews, but not the offer.",
+     "for_you_if": ["You reach interviews but don't get the offer", "You know your work well but find it hard to talk about it under pressure", "You have an important interview coming up and want to be ready"],
+     "inclusions": ["Mock interviews with honest, specific feedback", "Your best examples written up as STAR stories you can reuse", "Answers for the questions you dread, including salary", "A debrief after each real interview"],
+     "outcomes_intro": "", "duration_label": "",
      "price_cents": 210000, "gst_treatment": "ex_gst", "sort_order": 2, "cta_type": "book_call"},
-    {"key": "business-english-quantum-leap", "name": "Business English Quantum Leap", "tagline": "[TAGLINE TO COME]",
+    {"key": "business-english-quantum-leap", "name": "Business English Quantum Leap",
+     "tagline": "English that carries authority in the room.",
+     "description": "For professionals whose English is already good, who want it to sound confident and senior in meetings, presentations and everyday workplace conversations. Over twelve weeks we work on the situations that matter in your job, one each week.",
+     "situation_quote": "My English is good. I want it to sound senior.",
+     "for_you_if": ["You hold back in meetings even when you know the answer", "Your writing is correct but doesn't sound natural to colleagues", "You're stepping into a role where you'll lead, present or negotiate"],
+     "inclusions": ["Weekly one-to-one sessions for 12 weeks", "Speaking up, disagreeing politely and leading a meeting", "Emails and messages that read as clear and professional", "Presentations rehearsed with feedback"],
+     "outcomes_intro": "", "duration_label": "12 weeks",
      "price_cents": 385000, "gst_treatment": "inc_gst", "sort_order": 4, "cta_type": "enquire"},
 ]
 
@@ -165,14 +183,22 @@ async def seed_demo():
                                    "password_hash": hash_password("Student123!"), "created_at": now_iso(), "disabled": False})
 
 
+COPY_KEYS = ("tagline", "description", "inclusions", "situation_quote", "for_you_if", "outcomes_intro", "duration_label")
+
+
 async def seed_services():
     for p in SERVICE_PACKAGES:
+        copy = {k: p[k] for k in COPY_KEYS if k in p}
+        price = {k: v for k, v in p.items() if k not in COPY_KEYS}
         await db.service_packages.update_one(
             {"key": p["key"]},
-            {"$setOnInsert": {**p, "id": new_id(), "description": "[DESCRIPTION TO COME]",
-                              "inclusions": ["[INCLUSIONS TO COME]"], "duration_label": "", "status": "published",
+            {"$setOnInsert": {**price, **copy, "id": new_id(), "status": "published",
                               "currency": "AUD", "created_at": now_iso(), "updated_at": now_iso()}},
             upsert=True)
+        # Fill the draft only while the public copy is still the placeholder. Later edits stay.
+        existing = await db.service_packages.find_one({"key": p["key"]})
+        if existing and (not existing.get("situation_quote") or existing.get("description") in ("", "[DESCRIPTION TO COME]")):
+            await db.service_packages.update_one({"key": p["key"]}, {"$set": {**copy, "updated_at": now_iso()}})
 
 
 TIME_CATEGORIES = {

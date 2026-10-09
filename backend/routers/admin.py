@@ -483,6 +483,9 @@ class ServicePackageIn(BaseModel):
     tagline: str = ""
     description: str = ""
     inclusions: List[str] = []
+    situation_quote: str = ""
+    for_you_if: List[str] = []
+    outcomes_intro: str = ""
     duration_label: str = ""
     price_cents: int = 0
     gst_treatment: str = "ex_gst"
