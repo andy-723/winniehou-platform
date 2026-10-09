@@ -24,7 +24,7 @@ services:
       EMAIL_REPLY_TO: ${EMAIL_REPLY_TO:-}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-local-admin-password}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:43123,http://127.0.0.1:43123}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
       APP_NAME: ${APP_NAME:-winnie-lms}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
@@ -33,12 +33,12 @@ services:
       BUNNY_LIBRARY_ID: ${BUNNY_LIBRARY_ID:-}
       BUNNY_STREAM_API_KEY: ${BUNNY_STREAM_API_KEY:-}
       BUNNY_TOKEN_AUTH_KEY: ${BUNNY_TOKEN_AUTH_KEY:-}
-      REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:-http://127.0.0.1:43124}
+      REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:-http://127.0.0.1:8001}
     depends_on:
       mongo:
         condition: service_healthy
     ports:
-      - "43124:8000"
+      - "8001:8000"
     healthcheck:
       test:
         [
@@ -65,7 +65,7 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - "43123:80"
+      - "3000:80"
 
 volumes:
   mongo-data:

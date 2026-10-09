@@ -10,10 +10,10 @@ From this directory:
 docker compose up --build
 ```
 
-Published ports (chosen so they do not collide with 3000, 5173, or 8080):
+Published ports, matching the ports this app used before:
 
-- UI: http://127.0.0.1:43123
-- API: http://127.0.0.1:43124 (also proxied at http://127.0.0.1:43123/api)
+- UI: http://127.0.0.1:3000
+- API: http://127.0.0.1:8001 (also proxied at http://127.0.0.1:3000/api)
 
 MongoDB stays on the Compose network and is not published to the host.
 
