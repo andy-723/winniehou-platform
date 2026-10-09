@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { api, errMsg, fmtDate } from "@/lib/api";
 import { Spinner } from "@/components/Shared";
 import { AdminHeader, Modal } from "./AdminLayout";
+import CDPModal from "./AdminCDP";
 
 const LABELS = { new: "New", call_booked: "Call booked", call_done: "Call done", cdp_draft: "CDP draft", cdp_review: "CDP review", plan_sent: "Plan sent", plan_viewed: "Plan viewed", accepted: "Accepted", paid: "Paid", lost: "Lost" };
 const SOURCES = ["xiaohongshu", "wechat", "referral", "website", "other"];
@@ -19,9 +20,12 @@ export default function AdminProspects() {
   const [edit, setEdit] = useState(null);
   const [lostId, setLostId] = useState(null);
   const [lostReason, setLostReason] = useState("");
+  const [cdp, setCdp] = useState(false);
+  const [pkgs, setPkgs] = useState([]);
 
   const load = () => api.get("/admin/prospects", { params: { q, source } }).then((r) => setData(r.data));
   useEffect(() => { const t = setTimeout(load, 200); return () => clearTimeout(t); }, [q, source]); // eslint-disable-line
+  useEffect(() => { api.get("/services").then((r) => setPkgs(r.data)).catch(() => {}); }, []);
   useEffect(() => { const h = () => sel && open(sel.id); window.addEventListener("time-updated", h); return () => window.removeEventListener("time-updated", h); }); // eslint-disable-line
 
   const open = async (id) => { const { data } = await api.get(`/admin/prospects/${id}`); setSel(data); setEdit({ ...data }); };
@@ -90,6 +94,7 @@ export default function AdminProspects() {
       )}
 
       <NewProspect open={adding} onClose={() => setAdding(false)} onDone={() => { setAdding(false); load(); }} />
+      <CDPModal prospect={sel} packages={pkgs} open={cdp} onClose={() => setCdp(false)} onChanged={() => sel && open(sel.id)} />
 
       <Modal open={!!sel} onClose={() => setSel(null)} title={sel ? `${sel.first_name} ${sel.last_name}` : ""} wide>
         {sel && edit && (
@@ -98,6 +103,7 @@ export default function AdminProspects() {
               <button onClick={() => startCall(sel)} className="btn-gold !py-1.5 !text-xs" data-testid="prospect-start-call"><Play size={13} /> Start call</button>
               <button onClick={() => copyLink("book", sel)} className="btn-outline !py-1.5 !text-xs" data-testid="prospect-copy-book"><Copy size={13} /> Copy booking link</button>
               <button onClick={() => copyLink("intake", sel)} className="btn-outline !py-1.5 !text-xs" data-testid="prospect-copy-intake"><Copy size={13} /> Copy intake link</button>
+              <button onClick={() => setCdp(true)} className="btn-navy !py-1.5 !text-xs" data-testid="prospect-cdp-btn">CDP</button>
               <span className="ml-auto inline-flex items-center gap-1 text-slate-500 text-xs"><Clock size={13} /> {hrs(sel.minutes || 0)} logged</span>
             </div>
 

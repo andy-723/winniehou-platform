@@ -19,6 +19,8 @@ import { PaymentSuccess, PaymentCancel } from "@/pages/PaymentResult";
 import Dashboard, { OrderReceipt } from "@/pages/Dashboard";
 import Blog, { BlogPost } from "@/pages/Blog";
 import Book, { Intake } from "@/pages/Book";
+import Plan from "@/pages/Plan";
+import Proposal from "@/pages/Proposal";
 import { Terms, Privacy, Disclaimer } from "@/pages/Legal";
 import { Login, Register, ForgotPassword, ResetPassword } from "@/pages/Auth";
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -77,6 +79,8 @@ export default function App() {
                 <Route path="/disclaimer" element={<Disclaimer />} />
                 <Route path="/book" element={<Book />} />
                 <Route path="/intake" element={<Intake />} />
+                <Route path="/plan/:token" element={<Plan />} />
+                <Route path="/plan/:token/proposal" element={<Proposal />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

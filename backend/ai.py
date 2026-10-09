@@ -59,3 +59,27 @@ async def parse_resume(resume_text: str):
     except Exception as e:
         logger.warning(f"parse_resume failed: {e}")
         return None
+
+
+async def draft_cdp(notes: dict, resume_text: str):
+    pronoun = (notes or {}).get("pronoun") or "they"
+    system = ("You are Winnie Hou, a warm, professional career coach at Better Careers. "
+              "Write in Australian English. Output STRICT JSON only, no prose, no markdown.")
+    prompt = (
+        f'Write the NARRATIVE sections of a Career Development Plan from the notes and resume below. '
+        f'Use the client\'s pronoun "{pronoun}" consistently. Use ONLY facts given; write "[TO CONFIRM]" where '
+        f'information is missing. NEVER mention prices, fees, discounts, guarantees of employment, or legal terms. '
+        f'Visa status may be restated exactly as recorded but never give visa advice.\n'
+        'Return JSON exactly in this shape:\n'
+        '{"current_situation":[],"current_challenges":[],"background":"","career_recommendation":"",'
+        '"goals":[],"development_focus":[],"support_approach":[],"short_term_milestones":[],'
+        '"milestone_table":[{"timeframe":"1-2 days","action":""},{"timeframe":"1-2 weeks","action":""},{"timeframe":"Month 1-2","action":""}],'
+        '"target_roles":[{"role":"","industry":"","approach":""}]}\n\n'
+        f'NOTES:\n{json.dumps(notes)[:6000]}\n\nRESUME:\n{(resume_text or "")[:6000]}'
+    )
+    for _ in range(2):
+        try:
+            return await _claude_json(system, prompt)
+        except Exception as e:
+            logger.warning(f"draft_cdp attempt failed: {e}")
+    return None
