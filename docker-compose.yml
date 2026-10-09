@@ -22,7 +22,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-local-dev-jwt-secret-change-me}
       EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-Winnie Hou}
       EMAIL_REPLY_TO: ${EMAIL_REPLY_TO:-}
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@localhost}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-local-admin-password}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:43123,http://127.0.0.1:43123}
       APP_NAME: ${APP_NAME:-winnie-lms}

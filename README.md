@@ -23,7 +23,7 @@ Stop with `docker compose down`. Data is kept in the `mongo-data` volume.
 
 On startup the API seeds an admin user from the environment:
 
-- email: `admin@localhost`
+- email: `admin@example.com` (the API rejects addresses without a dot in the domain)
 - password: `local-admin-password`
 
 Change `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `JWT_SECRET` before any shared or public use. Copy `env.example` to `.env` to override them. `.env` is gitignored.
