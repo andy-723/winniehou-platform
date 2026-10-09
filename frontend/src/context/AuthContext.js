@@ -1,5 +1,9 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
+import { DEV_AUTOLOGIN_ENABLED, DEV_ADMIN } from "@/lib/config";
+
+// Hard-guard: auto-login can ONLY run on the preview host, never on a deployed domain.
+const DEV_AUTOLOGIN = DEV_AUTOLOGIN_ENABLED && typeof window !== "undefined" && /(^|\.)preview\./.test(window.location.hostname);
 
 const AuthContext = createContext(null);
 
@@ -7,6 +11,15 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
   const refresh = useCallback(async () => {
+    // DEV/TESTING: if no session yet, sign in as admin automatically (preview only).
+    if (DEV_AUTOLOGIN && !localStorage.getItem("access_token")) {
+      try {
+        const { data } = await api.post("/auth/login", DEV_ADMIN);
+        localStorage.setItem("access_token", data.access_token);
+        setUser(data.user);
+        return;
+      } catch { /* fall through to normal flow */ }
+    }
     try {
       const { data } = await api.get("/auth/me");
       setUser(data);
