@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Check, Calendar, Mail, Sparkles } from "lucide-react";
 import { api, errMsg } from "@/lib/api";
 import { PageHeader, Spinner, Empty } from "@/components/Shared";
 import { ShortDisclaimer } from "@/pages/Legal";
-import { PUBLIC_PRICING, servicePrice, CALENDLY_URL } from "@/lib/config";
+import { servicePrice } from "@/lib/config";
 
 export default function Services() {
+  const navigate = useNavigate();
   const [pkgs, setPkgs] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", package: "", message: "", consent: false });
   const [wl, setWl] = useState({ name: "", email: "" });
@@ -16,7 +18,7 @@ export default function Services() {
   useEffect(() => { api.get("/services").then((r) => setPkgs(r.data)).catch(() => setPkgs([])); }, []);
 
   const preselect = (key) => { setForm((f) => ({ ...f, package: key })); document.getElementById("services-enquiry")?.scrollIntoView({ behavior: "smooth" }); };
-  const book = (key) => window.open(`${CALENDLY_URL}?utm_content=${encodeURIComponent(key)}`, "_blank");
+  const book = (key) => navigate(`/book?src=website&pkg=${encodeURIComponent(key)}`);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -48,19 +50,16 @@ export default function Services() {
                   <h3 className="font-serif text-xl text-[#F9F8F3]">{p.name}</h3>
                   {p.tagline && <p className="text-sm text-amber-400 mt-1">{p.tagline}</p>}
                   <div className="mt-4">
-                    {PUBLIC_PRICING ? (
-                      <><div className="font-serif text-2xl text-[#F9F8F3]" data-testid={`service-price-${p.key}`}>{price.main}</div>{price.sub && <div className="text-xs text-slate-400">{price.sub}</div>}</>
-                    ) : (
-                      <div className="font-serif text-2xl text-[#F9F8F3]" data-testid={`service-price-${p.key}`}>POA</div>
-                    )}
+                    <div className="font-serif text-2xl text-[#F9F8F3]" data-testid={`service-price-${p.key}`}>{price.main}</div>
+                    {price.sub && <div className="text-xs text-slate-400">{price.sub}</div>}
                   </div>
                   {p.duration_label && <div className="text-xs text-slate-500 mt-1">{p.duration_label}</div>}
                   <ul className="mt-5 space-y-2 text-sm text-slate-300 flex-1">
                     {(p.inclusions || []).map((inc, i) => <li key={i} className="flex gap-2"><Check size={15} className="text-amber-500 shrink-0 mt-0.5" />{inc}</li>)}
                   </ul>
                   <div className="mt-6">
-                    {p.cta_type === "book_call" && CALENDLY_URL ? (
-                      <button onClick={() => book(p.key)} className="btn-gold w-full" data-testid={`service-cta-${p.key}`}><Calendar size={15} /> Book a call</button>
+                    {p.cta_type === "book_call" ? (
+                      <button onClick={() => book(p.key)} className="btn-gold w-full" data-testid={`service-cta-${p.key}`}><Calendar size={15} /> Book a consultation</button>
                     ) : (
                       <button onClick={() => preselect(p.key)} className="btn-gold-outline w-full" data-testid={`service-cta-${p.key}`}><Mail size={15} /> Enquire</button>
                     )}

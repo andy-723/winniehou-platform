@@ -6,7 +6,7 @@ import { Spinner } from "@/components/Shared";
 import { AdminHeader, Modal } from "./AdminLayout";
 
 const hrs = (m) => `${(m / 60).toFixed(1)}h`;
-const TABS = [["all", "All"], ["client", "Clients"], ["student", "Students"], ["internal", "Internal"]];
+const TABS = [["all", "All"], ["client", "Clients"], ["student", "Students"], ["prospect", "Prospects"], ["internal", "Internal"]];
 
 const addMinutes = (t, mins) => {
   const [h, m] = t.split(":").map(Number);
@@ -32,6 +32,7 @@ export default function AdminTime() {
   const [cats, setCats] = useState([]);
   const [clients, setClients] = useState([]);
   const [students, setStudents] = useState([]);
+  const [prospects, setProspects] = useState([]);
   const [profit, setProfit] = useState([]);
   const [filters, setFilters] = useState({ date_from: "", date_to: "", category: "", billable: "" });
   const [form, setForm] = useState(null); // {editing_id?, ...fields}
@@ -52,12 +53,14 @@ export default function AdminTime() {
     api.get("/admin/time/categories").then((r) => setCats(r.data));
     api.get("/admin/clients").then((r) => setClients(r.data));
     api.get("/admin/students").then((r) => setStudents(r.data));
+    api.get("/admin/prospects").then((r) => setProspects(r.data.prospects));
   }, []);
   useEffect(() => { const h = () => load(); window.addEventListener("time-updated", h); return () => window.removeEventListener("time-updated", h); }); // eslint-disable-line
 
   const clientName = (id) => { const c = clients.find((x) => x.id === id); return c ? `${c.first_name} ${c.last_name}`.trim() : "Client"; };
   const studentName = (id) => { const s = students.find((x) => x.id === id); return s ? s.name : "Student"; };
-  const subjName = (e) => e.subject_type === "client" ? clientName(e.client_id) : e.subject_type === "student" ? studentName(e.student_id) : "Internal";
+  const prospectName = (id) => { const p = prospects.find((x) => x.id === id); return p ? `${p.first_name} ${p.last_name}`.trim() : "Prospect"; };
+  const subjName = (e) => e.subject_type === "client" ? clientName(e.client_id) : e.subject_type === "student" ? studentName(e.student_id) : e.subject_type === "prospect" ? prospectName(e.prospect_id) : "Internal";
 
   const del = async (id) => { if (!window.confirm("Delete entry?")) return; await api.delete(`/admin/time/entries/${id}`); toast.success("Deleted"); load(); };
 

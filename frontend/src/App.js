@@ -18,6 +18,7 @@ import Cart from "@/pages/Cart";
 import { PaymentSuccess, PaymentCancel } from "@/pages/PaymentResult";
 import Dashboard, { OrderReceipt } from "@/pages/Dashboard";
 import Blog, { BlogPost } from "@/pages/Blog";
+import Book, { Intake } from "@/pages/Book";
 import { Terms, Privacy, Disclaimer } from "@/pages/Legal";
 import { Login, Register, ForgotPassword, ResetPassword } from "@/pages/Auth";
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -29,6 +30,7 @@ import AdminServices from "@/pages/admin/AdminServices";
 import AdminClients from "@/pages/admin/AdminClients";
 import AdminTime from "@/pages/admin/AdminTime";
 import AdminReports from "@/pages/admin/AdminReports";
+import AdminProspects from "@/pages/admin/AdminProspects";
 import AdminOrders from "@/pages/admin/AdminOrders";
 import AdminCoupons from "@/pages/admin/AdminCoupons";
 import AdminProducts from "@/pages/admin/AdminProducts";
@@ -73,6 +75,8 @@ export default function App() {
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/disclaimer" element={<Disclaimer />} />
+                <Route path="/book" element={<Book />} />
+                <Route path="/intake" element={<Intake />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -91,6 +95,7 @@ export default function App() {
                   <Route path="courses" element={<AdminCourses />} />
                   <Route path="courses/:id" element={<CourseEditor />} />
                   <Route path="students" element={<AdminStudents />} />
+                  <Route path="prospects" element={<AdminProspects />} />
                   <Route path="services" element={<AdminServices />} />
                   <Route path="clients" element={<AdminClients />} />
                   <Route path="time" element={<AdminTime />} />

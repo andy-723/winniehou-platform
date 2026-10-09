@@ -3,7 +3,7 @@ import os
 import logging
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from routers import auth, courses, payments, content, admin, timetrack
+from routers import auth, courses, payments, content, admin, timetrack, prospects
 from seed import seed_admin, seed_demo, seed_services, seed_time, ensure_indexes
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -16,6 +16,8 @@ app.include_router(payments.router)
 app.include_router(content.router)
 app.include_router(admin.router)
 app.include_router(timetrack.router)
+app.include_router(prospects.router)
+app.include_router(prospects.public_router)
 
 
 @app.get("/api/health")

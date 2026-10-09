@@ -140,15 +140,18 @@ async def categories():
 
 
 # ---------- entry validation ----------
-def _validate(subject_type, student_id, client_id, engagement_id):
+def _validate(subject_type, student_id, client_id, engagement_id, prospect_id=None):
     if subject_type == "student":
-        if not student_id or client_id or engagement_id:
-            raise HTTPException(400, "Student entries require student_id and no client fields")
+        if not student_id or client_id or engagement_id or prospect_id:
+            raise HTTPException(400, "Student entries require student_id and no other subject fields")
     elif subject_type == "client":
-        if not (client_id and engagement_id) or student_id:
-            raise HTTPException(400, "Client entries require client_id + engagement_id and no student_id")
+        if not (client_id and engagement_id) or student_id or prospect_id:
+            raise HTTPException(400, "Client entries require client_id + engagement_id and no other subject fields")
+    elif subject_type == "prospect":
+        if not prospect_id or student_id or client_id or engagement_id:
+            raise HTTPException(400, "Prospect entries require prospect_id and no other subject fields")
     elif subject_type == "internal":
-        if student_id or client_id or engagement_id:
+        if student_id or client_id or engagement_id or prospect_id:
             raise HTTPException(400, "Internal entries take no subject")
     else:
         raise HTTPException(400, "Invalid subject_type")
@@ -163,6 +166,7 @@ class TimerStart(BaseModel):
     course_id: Optional[str] = None
     client_id: Optional[str] = None
     engagement_id: Optional[str] = None
+    prospect_id: Optional[str] = None
     billable: bool = False
 
 
@@ -173,7 +177,7 @@ async def get_timer(user: dict = Depends(require_admin)):
 
 @router.post("/time/timer/start")
 async def start_timer(body: TimerStart, user: dict = Depends(require_admin)):
-    _validate(body.subject_type, body.student_id, body.client_id, body.engagement_id)
+    _validate(body.subject_type, body.student_id, body.client_id, body.engagement_id, body.prospect_id)
     # stop any running timer first
     running = await db.time_entries.find_one({"user_id": user["id"], "ended_at": None})
     if running:
@@ -193,6 +197,13 @@ async def stop_timer(user: dict = Depends(require_admin)):
         raise HTTPException(404, "No running timer")
     end = now_iso()
     await db.time_entries.update_one({"id": running["id"]}, {"$set": {"ended_at": end, "duration_minutes": _minutes(running["started_at"], end), "updated_at": end}})
+    if running.get("subject_type") == "prospect" and running.get("prospect_id"):
+        p = await db.prospects.find_one({"id": running["prospect_id"]}, {"_id": 0, "call_at": 1, "status": 1})
+        if p:
+            patch = {"status": "call_done", "updated_at": end}
+            if not p.get("call_at"):
+                patch["call_at"] = running["started_at"]
+            await db.prospects.update_one({"id": running["prospect_id"]}, {"$set": patch})
     return await db.time_entries.find_one({"id": running["id"]}, NO_ID)
 
 
@@ -205,6 +216,7 @@ class EntryIn(BaseModel):
     course_id: Optional[str] = None
     client_id: Optional[str] = None
     engagement_id: Optional[str] = None
+    prospect_id: Optional[str] = None
     started_at: str
     ended_at: str
     billable: bool = False
@@ -212,7 +224,7 @@ class EntryIn(BaseModel):
 
 @router.get("/time/entries")
 async def list_entries(subject_type: Optional[str] = None, student_id: Optional[str] = None,
-                       client_id: Optional[str] = None, category: Optional[str] = None,
+                       client_id: Optional[str] = None, prospect_id: Optional[str] = None, category: Optional[str] = None,
                        billable: Optional[bool] = None, date_from: Optional[str] = None, date_to: Optional[str] = None):
     q = {"ended_at": {"$ne": None}}
     if subject_type:
@@ -221,6 +233,8 @@ async def list_entries(subject_type: Optional[str] = None, student_id: Optional[
         q["student_id"] = student_id
     if client_id:
         q["client_id"] = client_id
+    if prospect_id:
+        q["prospect_id"] = prospect_id
     if category:
         q["category"] = category
     if billable is not None:
@@ -235,7 +249,7 @@ async def list_entries(subject_type: Optional[str] = None, student_id: Optional[
 
 @router.post("/time/entries")
 async def create_entry(body: EntryIn):
-    _validate(body.subject_type, body.student_id, body.client_id, body.engagement_id)
+    _validate(body.subject_type, body.student_id, body.client_id, body.engagement_id, body.prospect_id)
     doc = {**body.model_dump(), "id": new_id(), "user_id": None, "source": "manual",
            "duration_minutes": _minutes(body.started_at, body.ended_at), "created_at": now_iso(), "updated_at": now_iso()}
     await db.time_entries.insert_one(doc)
@@ -245,7 +259,7 @@ async def create_entry(body: EntryIn):
 
 @router.put("/time/entries/{eid}")
 async def update_entry(eid: str, body: EntryIn):
-    _validate(body.subject_type, body.student_id, body.client_id, body.engagement_id)
+    _validate(body.subject_type, body.student_id, body.client_id, body.engagement_id, body.prospect_id)
     patch = {**body.model_dump(), "duration_minutes": _minutes(body.started_at, body.ended_at), "updated_at": now_iso()}
     await db.time_entries.update_one({"id": eid}, {"$set": patch})
     return await db.time_entries.find_one({"id": eid}, NO_ID)
@@ -261,7 +275,7 @@ async def delete_entry(eid: str):
 @router.get("/time/summary")
 async def summary(date_from: Optional[str] = None, date_to: Optional[str] = None):
     rows = await list_entries(date_from=date_from, date_to=date_to)
-    by_subject = {"client": 0, "student": 0, "internal": 0}
+    by_subject = {"client": 0, "student": 0, "internal": 0, "prospect": 0}
     billable = {"billable": 0, "non_billable": 0}
     by_cat = {}
     for r in rows:
@@ -279,7 +293,7 @@ async def summary(date_from: Optional[str] = None, date_to: Optional[str] = None
 async def hours_week():
     monday = (datetime.now(timezone.utc) - timedelta(days=datetime.now(timezone.utc).weekday())).strftime("%Y-%m-%d")
     rows = await list_entries(date_from=monday)
-    out = {"client": 0, "student": 0, "internal": 0}
+    out = {"client": 0, "student": 0, "internal": 0, "prospect": 0}
     for r in rows:
         out[r.get("subject_type", "internal")] = out.get(r.get("subject_type", "internal"), 0) + r.get("duration_minutes", 0)
     return {k: round(v / 60, 1) for k, v in out.items()}

@@ -111,11 +111,9 @@ POSTS = [
 
 SERVICE_PACKAGES = [
     {"key": "career-coaching-essentials", "name": "Career Coaching Essentials", "tagline": "[TAGLINE TO COME]",
-     "price_cents": 195000, "gst_treatment": "ex_gst", "sort_order": 1, "cta_type": "book_call"},
+     "price_cents": 210000, "gst_treatment": "ex_gst", "sort_order": 1, "cta_type": "book_call"},
     {"key": "interview-for-success", "name": "Interview for Success", "tagline": "[TAGLINE TO COME]",
-     "price_cents": 195000, "gst_treatment": "ex_gst", "sort_order": 2, "cta_type": "book_call"},
-    {"key": "bundle", "name": "Career Coaching + Interview Bundle", "tagline": "Best value",
-     "price_cents": 390000, "gst_treatment": "ex_gst", "sort_order": 3, "cta_type": "book_call"},
+     "price_cents": 210000, "gst_treatment": "ex_gst", "sort_order": 2, "cta_type": "book_call"},
     {"key": "business-english-quantum-leap", "name": "Business English Quantum Leap", "tagline": "[TAGLINE TO COME]",
      "price_cents": 385000, "gst_treatment": "inc_gst", "sort_order": 4, "cta_type": "enquire"},
 ]
@@ -168,6 +166,7 @@ async def seed_services():
 TIME_CATEGORIES = {
     "client": ["Coaching session", "CDP preparation", "Resume / LinkedIn review", "Mock interview", "Job search support", "Email / admin"],
     "student": ["Written activity review", "Q&A / support", "Live class", "Course admin"],
+    "prospect": ["Discovery call", "CDP preparation", "Follow-up"],
     "internal": ["Content creation", "Marketing", "Business admin"],
 }
 

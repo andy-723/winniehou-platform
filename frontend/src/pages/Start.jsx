@@ -1,12 +1,13 @@
 import { useEffect, useState, useRef } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { Check, Calendar, CreditCard } from "lucide-react";
 import { api } from "@/lib/api";
 import { Spinner } from "@/components/Shared";
-import { servicePrice, CALENDLY_URL, STRIPE_DEPOSIT_URL } from "@/lib/config";
+import { servicePrice, STRIPE_DEPOSIT_URL } from "@/lib/config";
 
 export default function Start() {
   const [sp] = useSearchParams();
+  const navigate = useNavigate();
   const name = sp.get("name");
   const lead = sp.get("lead");
   const [pkgs, setPkgs] = useState(null);
@@ -20,13 +21,7 @@ export default function Start() {
     }
   }, [lead, name]);
 
-  const book = () => {
-    try {
-      const u = new URL(CALENDLY_URL);
-      if (lead) u.searchParams.set("utm_content", lead);
-      window.open(u.toString(), "_blank");
-    } catch { window.open(CALENDLY_URL, "_blank"); }
-  };
+  const book = () => navigate(`/book?src=start${lead ? `&lead=${encodeURIComponent(lead)}` : ""}`);
 
   if (pkgs === null) return <Spinner />;
 
@@ -38,21 +33,18 @@ export default function Start() {
           <h1 className="font-serif text-4xl sm:text-5xl" data-testid="start-greeting">Hi {name || "there"},</h1>
           <p className="text-slate-300 mt-5 max-w-2xl mx-auto text-lg">Here are the coaching packages we discussed in your Career Development Plan. Choose the path that fits, then book your strategy call with Winnie.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">
-            {CALENDLY_URL && <button onClick={book} className="btn-gold" data-testid="start-book-btn"><Calendar size={16} /> Book your strategy call</button>}
+            <button onClick={book} className="btn-gold" data-testid="start-book-btn"><Calendar size={16} /> Book your consultation</button>
             {STRIPE_DEPOSIT_URL && <a href={STRIPE_DEPOSIT_URL} target="_blank" rel="noreferrer" className="btn-outline !text-white !border-white/30" data-testid="start-deposit-btn"><CreditCard size={16} /> Pay deposit</a>}
-            {!CALENDLY_URL && !STRIPE_DEPOSIT_URL && <Link to="/contact" className="btn-gold" data-testid="start-enquire-btn">Enquire with Winnie</Link>}
           </div>
         </div>
       </section>
 
       <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {pkgs.map((p) => {
             const price = servicePrice(p);
-            const best = p.key === "bundle";
             return (
-              <div key={p.id} data-testid={`start-card-${p.key}`} className={`card-dark p-7 flex flex-col relative transition-[border-color,transform] duration-300 hover:-translate-y-1 ${best ? "!border-amber-400/70" : "hover:border-[#D4AF37]/50"}`}>
-                {best && <span className="absolute -top-3 left-1/2 -translate-x-1/2 gold-badge !bg-amber-500 !text-[#0A192F] !border-amber-500">Best value</span>}
+              <div key={p.id} data-testid={`start-card-${p.key}`} className="card-dark p-7 flex flex-col relative transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-[#D4AF37]/50">
                 <h3 className="font-serif text-xl text-[#F9F8F3]">{p.name}</h3>
                 {p.tagline && <p className="text-sm text-amber-400 mt-1">{p.tagline}</p>}
                 <div className="mt-4">
@@ -62,7 +54,7 @@ export default function Start() {
                 <ul className="mt-5 space-y-2 text-sm text-slate-300 flex-1">
                   {(p.inclusions || []).map((inc, i) => <li key={i} className="flex gap-2"><Check size={15} className="text-amber-500 shrink-0 mt-0.5" />{inc}</li>)}
                 </ul>
-                {CALENDLY_URL && <button onClick={book} className="btn-navy w-full mt-6" data-testid={`start-cta-${p.key}`}><Calendar size={15} /> Book a call</button>}
+                <button onClick={book} className="btn-navy w-full mt-6" data-testid={`start-cta-${p.key}`}><Calendar size={15} /> Book a consultation</button>
               </div>
             );
           })}
