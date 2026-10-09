@@ -1,0 +1,71 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      DB_NAME: ${DB_NAME:-winniehou}
+      JWT_SECRET: ${JWT_SECRET:-local-dev-jwt-secret-change-me}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-Winnie Hou}
+      EMAIL_REPLY_TO: ${EMAIL_REPLY_TO:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@localhost}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-local-admin-password}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:43123,http://127.0.0.1:43123}
+      APP_NAME: ${APP_NAME:-winnie-lms}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      EMERGENT_LLM_KEY: ${EMERGENT_LLM_KEY:-}
+      EMERGENT_EMAIL_KEY: ${EMERGENT_EMAIL_KEY:-}
+      BUNNY_LIBRARY_ID: ${BUNNY_LIBRARY_ID:-}
+      BUNNY_STREAM_API_KEY: ${BUNNY_STREAM_API_KEY:-}
+      BUNNY_TOKEN_AUTH_KEY: ${BUNNY_TOKEN_AUTH_KEY:-}
+      REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:-http://127.0.0.1:43124}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "43124:8000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:-}
+        REACT_APP_CALENDLY_URL: ${REACT_APP_CALENDLY_URL:-}
+        REACT_APP_STRIPE_DEPOSIT_URL: ${REACT_APP_STRIPE_DEPOSIT_URL:-}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "43123:80"
+
+volumes:
+  mongo-data:

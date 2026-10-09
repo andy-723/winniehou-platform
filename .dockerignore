@@ -1,0 +1,13 @@
+.git
+**/.git
+**/node_modules
+**/__pycache__
+**/.venv
+**/venv
+frontend/build
+**/*.pyc
+test_reports
+.emergent
+memory
+*.md
+!frontend/README.md
