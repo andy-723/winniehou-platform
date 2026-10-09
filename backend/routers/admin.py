@@ -143,6 +143,7 @@ class CourseIn(BaseModel):
     thumbnail_url: str = ""
     published: bool = False
     outcomes: List[str] = []
+    audience: List[str] = []
     duration_hours: float = 0
     modules: Optional[List[Any]] = None
 

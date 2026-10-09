@@ -30,6 +30,9 @@ COURSES = [
      "duration_hours": 6.5, "published": True,
      "outcomes": ["Open and close high-stakes presentations with confidence", "Handle hostile questions gracefully",
                   "Use rhetorical structure native executives rely on", "Eliminate filler and hedging language"],
+     "audience": ["Senior professionals who already speak English and want to sound like a leader",
+                  "Managers who present to executives, boards, or clients",
+                  "Anyone who hedges, fills silence, or loses the room in Q&A"],
      "description": "<p>A six-module masterclass for senior professionals who already speak good English but want to <em>sound like a leader</em>. Winnie breaks down the language patterns of Fortune 500 executives and gives you repeatable frameworks.</p>",
      "modules": [
          module("Foundations of Executive Voice", "Pace, pause and precision.", [
@@ -50,6 +53,9 @@ COURSES = [
      "duration_hours": 4, "published": True,
      "outcomes": ["Write concise emails in under 5 minutes", "Master tone: direct yet diplomatic",
                   "Templates for requests, follow-ups and bad news", "Avoid the 12 most common non-native mistakes"],
+     "audience": ["Professionals who write in English every day and want a reply, not silence",
+                  "Non-native writers who are polite but unclear",
+                  "Teams that want one standard for requests, follow-ups, and bad news"],
      "description": "<p>The most-requested course by Winnie's corporate clients. Every lesson comes with downloadable templates you can adapt immediately.</p>",
      "modules": [
          module("Email Fundamentals", "Subject lines, openers and structure.", [
@@ -66,6 +72,9 @@ COURSES = [
      "duration_hours": 5, "published": True,
      "outcomes": ["Open negotiations from a position of strength", "Make and refuse concessions diplomatically",
                   "Read and use conditional language precisely", "Summarise and close agreements"],
+     "audience": ["Deal-makers working across borders",
+                  "People who need precise conditional language in live negotiations",
+                  "Professionals who freeze when a negotiation stalls"],
      "description": "<p>Built from real transcripts of cross-border deals. Learn how native negotiators soften, strengthen and steer.</p>",
      "modules": [
          module("Setting the Table", "Agendas, positions and interests.", [
@@ -82,6 +91,9 @@ COURSES = [
      "duration_hours": 3, "published": True,
      "outcomes": ["Start conversations naturally at events", "Keep conversations flowing with follow-up questions",
                   "Exit conversations gracefully", "Culture tips for global teams"],
+     "audience": ["Beginners who go quiet at conferences and in the office",
+                  "Professionals joining a global team",
+                  "Anyone who wants a way into a conversation and a graceful way out"],
      "description": "<p>Perfect for professionals who freeze at conferences or in the office kitchen. Short, practical, and immediately useful.</p>",
      "modules": [
          module("Starting Conversations", "Icebreakers that don't feel forced.", [
