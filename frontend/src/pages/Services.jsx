@@ -7,6 +7,11 @@ import { Spinner, Empty } from "@/components/Shared";
 import { ShortDisclaimer } from "@/pages/Legal";
 import { formatAud, incGstCents, servicePrice } from "@/lib/config";
 
+const CHAPTER_ANCHOR = {
+  "interview-for-success": "interview",
+  "business-english-quantum-leap": "quantum-leap",
+};
+
 const STEPS = [
   { n: "01", title: "Discovery call", text: "A conversation about where you are and where you want to be. Book a time that suits you." },
   { n: "02", title: "Your plan", text: "Winnie writes your Career Development Plan, with the program she recommends and a clear quote." },
@@ -133,6 +138,7 @@ export default function Services() {
                   const price = servicePrice(p);
                   return (
                     <article key={p.id} id={`program-${p.key}`} data-testid={`service-card-${p.key}`} className="scroll-mt-28 rise">
+                      {CHAPTER_ANCHOR[p.key] && <span id={CHAPTER_ANCHOR[p.key]} className="block h-0 scroll-mt-28" />}
                       <h2 className="font-serif text-3xl sm:text-4xl">{p.name}</h2>
                       {p.tagline && <p className="italic text-amber-400 mt-2">{p.tagline}</p>}
                       {p.description && <p className="text-slate-300 mt-5 max-w-2xl leading-relaxed">{p.description}</p>}

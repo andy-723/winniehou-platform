@@ -218,6 +218,28 @@ async def seed_time():
                                                 {"$setOnInsert": {"id": new_id(), "subject_type": st, "name": n, "order": i}}, upsert=True)
 
 
+PLACEMENTS = [
+    ("Commonwealth Bank (CBA)", 1),
+    ("EY", 2),
+    ("PwC", 3),
+    ("Deloitte", 4),
+    ("University of Canberra", 5),
+]
+
+
+async def seed_placements():
+    for name, order in PLACEMENTS:
+        await db.client_placements.update_one(
+            {"name": name},
+            {"$setOnInsert": {
+                "id": new_id(), "name": name, "logo_url": "", "alt": "",
+                "sort_order": order, "confirmed": False, "published": False,
+                "created_at": now_iso(), "updated_at": now_iso(),
+            }},
+            upsert=True,
+        )
+
+
 async def ensure_indexes():
     await db.users.create_index("email", unique=True)
     await db.users.create_index("id", unique=True)
@@ -241,3 +263,5 @@ async def ensure_indexes():
     await db.time_entries.create_index("client_id")
     await db.time_entries.create_index("student_id")
     await db.time_categories.create_index([("subject_type", 1), ("name", 1)], unique=True)
+    await db.client_placements.create_index("id", unique=True)
+    await db.client_placements.create_index("name", unique=True)

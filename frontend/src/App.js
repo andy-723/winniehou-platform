@@ -37,6 +37,8 @@ import AdminOrders from "@/pages/admin/AdminOrders";
 import AdminCoupons from "@/pages/admin/AdminCoupons";
 import AdminProducts from "@/pages/admin/AdminProducts";
 import AdminBlog from "@/pages/admin/AdminBlog";
+import AdminHero from "@/pages/admin/AdminHero";
+import AdminPlacements from "@/pages/admin/AdminPlacements";
 
 const Public = () => (
   <div className="flex flex-col min-h-screen">
@@ -96,6 +98,8 @@ export default function App() {
               <Route element={<Protected admin />}>
                 <Route path="/admin" element={<AdminLayout />}>
                   <Route index element={<AdminDashboard />} />
+                  <Route path="hero" element={<AdminHero />} />
+                  <Route path="placements" element={<AdminPlacements />} />
                   <Route path="courses" element={<AdminCourses />} />
                   <Route path="courses/:id" element={<CourseEditor />} />
                   <Route path="students" element={<AdminStudents />} />
