@@ -1,0 +1,27 @@
+{
+  "summary": "Phase F1 CORE (Lead→Client automation) end-to-end verified. Backend: 8/8 pytest cases pass (services pricing exactly 210000/210000/385000, intake submit WeChat fallback + adhoc 'call shortly', consent required 400, admin prospects list/create/update/status/lost CRUD, timetrack prospect subject_type accepted). Frontend: /services shows '$2,310 inc GST ($2,100 + $210 GST)' x2 and '$3,850 inc GST' with no POA/bundle/UI-Test cards; 'Book a consultation' CTAs navigate to /book?src=website&pkg=... (not Calendly). /book mobile flow filled first/last/mobile/email, ticked intake-later (WeChat), chose intake-mode-meet, consent, submit → intake-success shows 'Winnie will contact you on WeChat to arrange a time.'. /intake form has NO call-mode controls, submit → 'Thanks, Winnie will call you shortly.'. Admin sidebar order confirmed Prospects above Clients (admin-nav-prospects between students and clients). Admin board renders 10 status columns incl. 'new'/'call_booked'/'call_done'/.../'lost', shows all public-submitted prospects in NEW. new-prospect-btn opens modal (np-first/np-mobile/np-email/np-consent/np-save) and created 'TESTF1Modal' appears instantly in NEW. view-board/view-list toggle switches between prospect-board and prospect-row-* rows (5 rows). Prospect detail modal contains all required controls (prospect-start-call, prospect-copy-book, prospect-copy-intake, prospect-status-select, prospect-save, prospect-mark-lost). Status select changed to call_booked and persisted. Start-call renders TimerBar top with 'Call with TESTF1Modal 00:00:00 Stop' — confirms prospect timer. /admin/time Prospects tab (time-tab-prospect) renders; after stopping timer the prospect auto-moved from NEW to CALL DONE column (counter 3→2 / 0→1) — stop-timer side-effect verified. Mark lost → lost-reason input appears → lost-confirm moves card to board-col-lost. Cleanup: all 6 TESTF1_* prospects moved to Lost column at end.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/services", "issues": ["Service cards still contain placeholder copy '[TAGLINE TO COME]' and '[INCLUSIONS TO COME]' — expected content gap per F1 scope; flag for Winnie to fill before launch, not a bug."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_prospects_phase_f1.py", "/app/test_reports/pytest/f1_results.xml"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "prospects.py: no admin DELETE endpoint for prospects — testing agents / admins can only soft-remove via mark-lost; consider adding a hard-delete or filtered 'archive' flag to keep board clean.",
+    "prospects.py:_find_dup uses email OR mobile OR both — if an admin creates a prospect that collides only on mobile with an existing lead with a different email, the 409 message leaks the existing first_name. Minor PII leak via error payload.",
+    "intake_resume accepts up to 10MB but ai.extract_text runs synchronously inline — large PDFs will block the request worker; consider FastAPI BackgroundTasks or offloading to the admin re-parse endpoint.",
+    "_upsert_prospect: when a duplicate is updated via intake, status is NOT reset to 'new' (fine), but consent_at is not updated even if new consent was given — audit trail gap.",
+    "Prospect board columns iterate STATUS_FLOW + ['lost'] (10 cols) but UI shows them all horizontally without horizontal scroll indicators; at 1920px the last columns (plan_viewed/accepted/paid/lost) are off-screen until you scroll. UX issue, consider collapsing late-stage columns or stage filter."
+  ],
+  "updated_files": ["/app/backend/tests/test_prospects_phase_f1.py"],
+  "success_rate": {"backend": "100% (8/8)", "frontend": "100% of tested flows"},
+  "test_credentials": "andrew.phan723@gmail.com / WinnieAdmin2026! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Created 6 TESTF1_* prospects via public intake (2), public /book (1), admin modal (1), and backend test (2). All moved to Lost column at end of run (no hard-delete endpoint exists).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Resume-upload path NOT exercised via Playwright (no PDF harness in automation env) — backend ai.parse_resume was validated by main agent earlier. If retesting, use the admin 'np-upload' or /book 'intake-resume-btn' with a tiny real PDF/DOCX and verify prospect.suggestions is populated + activity log shows 'resume read by Claude'. Drag-and-drop column move was NOT tested via Playwright (DnD requires custom mouse events) but underlying POST /api/admin/prospects/{pid}/status endpoint is covered and the status dropdown path works. Six TESTF1_* prospects remain in the Lost column — safe to ignore but main agent may want a hard-delete endpoint to clean seed data."
+}

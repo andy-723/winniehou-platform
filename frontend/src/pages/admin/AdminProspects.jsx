@@ -30,6 +30,7 @@ export default function AdminProspects() {
   const startCall = (p) => window.dispatchEvent(new CustomEvent("start-timer", { detail: { subject_type: "prospect", prospect_id: p.id, category: "Discovery call", billable: false, description: `Call with ${p.first_name}` } }));
   const copyLink = (kind, p) => { const url = `${window.location.origin}/${kind}?src=${p?.source || "wechat"}`; navigator.clipboard.writeText(url); toast.success(`${kind === "book" ? "Booking" : "Intake"} link copied`); };
   const doLost = async () => { try { await api.post(`/admin/prospects/${lostId}/lost`, { reason: lostReason }); setLostId(null); setLostReason(""); setSel(null); load(); } catch (e) { toast.error(errMsg(e)); } };
+  const doDelete = async () => { if (!window.confirm("Permanently delete this prospect and their activity/time?")) return; try { await api.delete(`/admin/prospects/${sel.id}`); toast.success("Prospect deleted"); setSel(null); load(); } catch (e) { toast.error(errMsg(e)); } };
 
   if (!data) return <Spinner />;
   const cols = [...data.flow, "lost"];
@@ -113,6 +114,7 @@ export default function AdminProspects() {
               <button onClick={saveEdit} className="btn-navy !py-1.5 !text-xs" data-testid="prospect-save">Save details</button>
               {sel.resume_file && <a href={`/api/files/${sel.resume_file.id}?download=1&auth=${localStorage.getItem("access_token")}`} target="_blank" rel="noreferrer" className="btn-outline !py-1.5 !text-xs">Resume: {sel.resume_file.original_filename}</a>}
               <button onClick={() => setLostId(sel.id)} className="text-xs text-red-600 hover:underline ml-auto" data-testid="prospect-mark-lost">Mark lost</button>
+              <button onClick={doDelete} className="text-xs text-slate-400 hover:text-red-600 hover:underline" data-testid="prospect-delete">Delete</button>
             </div>
 
             {sel.suggestions && (

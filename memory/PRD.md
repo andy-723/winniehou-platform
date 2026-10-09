@@ -61,6 +61,18 @@ Premium LMS + e-commerce for working professionals: course catalog, Stripe one-t
 
 ## Backlog / Roadmap
 
+### Lead→Client Automation — Step 1 (Price fix) + Phase F1 CORE (2026-10-09)
+**Step 1 — Price fix:** service_packages set to Essentials 210000 ex_gst, Interview 210000 ex_gst, Quantum Leap 385000 inc_gst; deleted "bundle" + "UI Test Pkg"; `/services` now shows real GST prices via the shared `servicePrice` helper (no more POA). Verified.
+
+**Phase F1 CORE** (Google Drive/Calendar DEFERRED — files use app object storage; booking shows WeChat fallback). Tested iteration_7: backend 8/8 pytest + all admin/public frontend flows pass.
+- Backend `routers/prospects.py`: prospects pipeline (statuses new→…→paid + lost), dedup on email/mobile, `prospect_activity` log. Public `POST /api/intake/resume` (object-storage upload, text extracted) + `POST /api/intake/submit` (create/update prospect, Claude resume parse → suggestions, WeChat fallback). Admin CRUD: list(+counts), get, create, update, status, lost, parse-resume, **delete**, prospects-digest.
+- Backend `ai.py`: `extract_text` (pypdf/python-docx) + `parse_resume` via emergentintegrations Claude (`claude-sonnet-5-5`, Emergent LLM key). Verified returning strict JSON.
+- Timer: `timetrack.py` gained subject_type `prospect` + `prospect_id` across timer/entries/_validate; stop_timer auto-sets prospect `call_done` + `call_at`; summary/hours-week include prospect; seeded prospect categories (Discovery call / CDP preparation / Follow-up).
+- Frontend: public `/book` (mobile-first, resume upload, call-mode, consent) + `/intake` (`Book.jsx`); admin `AdminProspects.jsx` (board w/ drag-to-status, list, search/source filter, New-prospect upload→Claude→confirm, detail: edit/status/copy links/Start call/Mark lost/Delete); sidebar "Prospects" above Clients; AdminTime "Prospects" tab + name resolution; `/services` & `/start` "Book a consultation" CTAs now route to `/book` (not Calendly).
+- Email/digest: Resend managed (ADMIN_EMAIL=andrew.phan723@gmail.com). Daily digest endpoint `GET /api/admin/prospects-digest` built; scheduling deferred.
+
+**F1 deferrals / next:** Google Calendar booking (2b) + Google Drive file store (section 4) — awaiting Winnie's Google Cloud OAuth client + Shared Drive; timer-bar manual "Prospect" picker option + AdminTime manual-entry prospect subject; digest email scheduling. Then Phase F1b (review room) and F2 (CDP/proposal/sign/Stripe). Coaching hours for Essentials/Interview still blank (sample data created elsewhere).
+
 ### Admin Reports — Toggl-style time visualization (2026-10-08)
 - New admin page `/admin/reports` (sidebar "Reports", `AdminReports.jsx`) using recharts.
 - Backend `routers/timetrack.py`: `GET /api/admin/time/reports` (totals incl. package revenue_cents, daily billable/non-billable series, by_client with hours+billable+effective $/h, by_student with reconnect-session count, detailed rows) + `GET /api/admin/time/reports/export?format=csv|xlsx|pdf`. XLSX via pandas+openpyxl (Summary/Clients/Students/Entries sheets); PDF via reportlab (navy/gold branded tables). Added deps: openpyxl, reportlab.

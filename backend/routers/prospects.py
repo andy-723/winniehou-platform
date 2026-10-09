@@ -82,6 +82,8 @@ async def _upsert_prospect(body: IntakeIn, by: str):
             "email": body.email.lower().strip(), "mobile": body.mobile.strip(), "wechat_id": body.wechat_id.strip(),
             "source": body.source or "wechat", "call_mode": body.call_mode, "call_type": body.call_type,
             "pkg": body.pkg or "", "consent": bool(body.consent), "updated_at": now_iso()}
+    if body.consent:
+        base["consent_at"] = now_iso()
     if body.resume_file_id:
         base["resume_file_id"] = body.resume_file_id
     if dup:
@@ -180,7 +182,7 @@ async def get_prospect(pid: str):
 async def create_prospect(body: ProspectIn):
     dup = await _find_dup(body.email, body.mobile)
     if dup:
-        raise HTTPException(409, f"A prospect with this email/mobile already exists ({dup['first_name']})")
+        raise HTTPException(409, "A prospect with this email or mobile already exists")
     pid = new_id()
     doc = {**body.model_dump(exclude={"consent"}), "id": pid,
            "preferred_name": body.preferred_name or body.first_name,
@@ -234,6 +236,14 @@ async def reparse(pid: str):
     await db.prospects.update_one({"id": pid}, {"$set": {"suggestions": sug}})
     await _log(pid, "resume re-read by Claude", "admin")
     return sug
+
+
+@router.delete("/prospects/{pid}")
+async def delete_prospect(pid: str):
+    await db.prospect_activity.delete_many({"prospect_id": pid})
+    await db.time_entries.delete_many({"prospect_id": pid})
+    await db.prospects.delete_one({"id": pid})
+    return {"ok": True}
 
 
 @router.get("/prospects-digest")
