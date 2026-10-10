@@ -30,8 +30,8 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-16" data-testid="dashboard-page">
-      <PageHeader eyebrow={`Welcome back, ${user?.name?.split(" ")[0]}`} title="My learning" />
-      <div className="flex gap-1 border-b border-slate-200 mb-10 overflow-x-auto">
+      <PageHeader tone="light" eyebrow={`Welcome back, ${user?.name?.split(" ")[0]}`} title="My learning" />
+      <div className="flex flex-wrap gap-x-1 border-b border-slate-200 mb-10">
         {tabs.map(([k, label, Icon]) => (
           <button key={k} onClick={() => setParams({ tab: k })} data-testid={`dash-tab-${k}`}
             className={`flex items-center gap-2 px-4 py-3 text-sm border-b-2 -mb-px whitespace-nowrap transition-colors ${tab === k ? "border-amber-500 text-[#0A192F] font-semibold" : "border-transparent text-slate-500 hover:text-slate-800"}`}><Icon size={15} /> {label}</button>
@@ -39,7 +39,7 @@ export default function Dashboard() {
       </div>
 
       {rows === undefined ? <Spinner /> : tab === "courses" ? (
-        rows.length === 0 ? <Empty title="No courses yet" hint="Your enrolled courses will appear here." cta={<Link to="/courses" className="btn-gold">Browse catalog</Link>} /> : (
+        rows.length === 0 ? <Empty tone="light" title="No courses yet" hint="Your enrolled courses will appear here." cta={<Link to="/courses" className="btn-gold">Browse catalog</Link>} /> : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-testid="my-courses-grid">
             {rows.map(({ course, progress }) => (
               <div key={course.id} className="card-lux flex flex-col" data-testid={`my-course-${course.slug}`}>
@@ -60,10 +60,10 @@ export default function Dashboard() {
           </div>
         )
       ) : tab === "library" ? (
-        rows.length === 0 ? <Empty title="No downloads yet" hint="Workbooks you purchase appear here." cta={<Link to="/shop" className="btn-gold">Visit the shop</Link>} /> : (
+        rows.length === 0 ? <Empty tone="light" title="No downloads yet" hint="Workbooks you purchase appear here." cta={<Link to="/shop" className="btn-gold">Visit the shop</Link>} /> : (
           <div className="grid md:grid-cols-2 gap-5">
             {rows.map((p) => (
-              <div key={p.id} className="card-lux p-5 flex gap-4 items-center" data-testid={`library-item-${p.id}`}>
+              <div key={p.id} className="card-lux p-5 flex flex-col sm:flex-row gap-4 sm:items-center" data-testid={`library-item-${p.id}`}>
                 <img src={p.image_url} alt="" className="w-20 h-20 object-cover rounded-lg" />
                 <div className="flex-1"><div className="font-serif text-lg text-[#0A192F]">{p.title}</div><div className="text-xs text-slate-500 mt-1 line-clamp-2">{p.description}</div></div>
                 {p.file_id ? <a href={fileUrl(p.file_id, true)} className="btn-gold !py-2 !px-3 !text-xs" data-testid={`download-${p.id}`}><FileDown size={14} /> Download</a>
@@ -73,7 +73,7 @@ export default function Dashboard() {
           </div>
         )
       ) : tab === "orders" ? (
-        rows.length === 0 ? <Empty title="No orders yet" /> : (
+        rows.length === 0 ? <Empty tone="light" title="No orders yet" /> : (
           <div className="card-lux overflow-x-auto">
             <table className="w-full text-sm" data-testid="orders-table">
               <thead className="bg-stone-50 text-xs uppercase tracking-wider text-slate-500"><tr><th className="text-left px-5 py-3">Order</th><th className="text-left px-5 py-3">Date</th><th className="text-left px-5 py-3">Items</th><th className="text-right px-5 py-3">Total</th><th className="px-5 py-3">Status</th><th className="px-5 py-3"></th></tr></thead>

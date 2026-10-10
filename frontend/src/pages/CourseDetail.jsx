@@ -105,7 +105,7 @@ export default function CourseDetail() {
           )}
 
           <section data-testid="curriculum">
-            <div className="flex items-end justify-between gap-4 mb-4">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4 mb-4">
               <h2 className="font-serif text-2xl text-[#0A192F]">Course content</h2>
               <p className="text-sm text-slate-500">{course.modules.length} modules · {totalLessons} lessons{hours ? ` · ${hours}` : ""}</p>
             </div>
@@ -116,27 +116,28 @@ export default function CourseDetail() {
                 return (
                   <div key={m.id}>
                     <button type="button" onClick={() => setOpenModule(open ? null : m.id)}
-                      className="w-full px-5 py-4 flex items-start gap-4 text-left hover:bg-stone-50" data-testid={`module-toggle-${m.id}`}>
+                      className="w-full px-4 sm:px-5 py-4 flex items-start gap-3 sm:gap-4 text-left hover:bg-stone-50" data-testid={`module-toggle-${m.id}`}>
                       <ChevronDown size={18} className={`text-slate-500 mt-1 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
                       <div className="min-w-0 flex-1">
                         <div className="text-xs font-mono text-slate-400">Section {mi + 1}</div>
                         <h3 className="font-serif text-lg text-[#0A192F]">{m.title}</h3>
                         {m.description && <p className="text-sm text-slate-500 mt-1">{m.description}</p>}
+                        <span className="sm:hidden block text-xs text-slate-500 mt-1">{m.lessons.length} lessons{mins ? ` · ${mins} min` : ""}</span>
                       </div>
-                      <span className="text-xs text-slate-500 shrink-0 pt-1">{m.lessons.length} lessons{mins ? ` · ${mins} min` : ""}</span>
+                      <span className="hidden sm:block text-xs text-slate-500 shrink-0 pt-1">{m.lessons.length} lessons{mins ? ` · ${mins} min` : ""}</span>
                     </button>
                     {open && (
                       <ul className="border-t border-slate-100">
                         {m.lessons.map((l) => (
-                          <li key={l.id} className="px-5 py-3 pl-14 flex items-center justify-between gap-4 text-sm">
-                            <div className="flex items-center gap-3 min-w-0">
-                              {l.locked ? <Lock size={14} className="text-slate-400 shrink-0" /> : <PlayCircle size={14} className="text-amber-600 shrink-0" />}
-                              <span className={`truncate ${l.locked ? "text-slate-400" : "text-slate-800"}`}>{l.title}</span>
+                          <li key={l.id} className="px-4 py-3 sm:px-5 sm:pl-14 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4 text-sm">
+                            <div className="flex items-start gap-3 min-w-0">
+                              {l.locked ? <Lock size={14} className="text-slate-400 shrink-0 mt-0.5" /> : <PlayCircle size={14} className="text-amber-600 shrink-0 mt-0.5" />}
+                              <span className={`min-w-0 ${l.locked ? "text-slate-400" : "text-slate-800"}`}>{l.title}</span>
                               {l.is_preview && !course.enrolled && <span className="gold-badge !py-0.5 shrink-0"><Eye size={11} className="mr-1" /> Preview</span>}
                             </div>
-                            <div className="flex items-center gap-4 shrink-0">
+                            <div className="flex items-center justify-between gap-4 sm:shrink-0 pl-7 sm:pl-0">
                               <span className="text-xs text-slate-500">{l.duration_minutes} min</span>
-                              {!l.locked && <Link to={`/learn/${course.slug}?lesson=${l.id}`} className="text-xs font-medium text-amber-700 hover:underline" data-testid={`lesson-link-${l.id}`}>{course.enrolled ? "Open" : "Preview"}</Link>}
+                              {!l.locked && <Link to={`/learn/${course.slug}?lesson=${l.id}`} className="inline-flex items-center min-h-11 sm:min-h-0 text-xs font-medium text-amber-700 hover:underline" data-testid={`lesson-link-${l.id}`}>{course.enrolled ? "Open" : "Preview"}</Link>}
                             </div>
                           </li>
                         ))}

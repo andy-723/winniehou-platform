@@ -117,7 +117,7 @@ export default function Services() {
               <div className="flex gap-2 overflow-x-auto px-4 py-3 scrollbar-none">
                 {pkgs.map((p) => (
                   <button key={p.key} type="button" onClick={() => scrollToId(`program-${p.key}`)}
-                    className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium border ${active === p.key ? "bg-amber-500 text-[#0A192F] border-amber-500" : "border-white/15 text-slate-300"}`}
+                    className={`shrink-0 min-h-11 px-3.5 rounded-full text-xs font-medium border ${active === p.key ? "bg-amber-500 text-[#0A192F] border-amber-500" : "border-white/15 text-slate-300"}`}
                     data-testid={`pill-${p.key}`}>{p.name}</button>
                 ))}
               </div>
@@ -188,7 +188,19 @@ export default function Services() {
 
           <section className="max-w-7xl mx-auto px-6 pb-16">
             <h2 className="font-serif text-3xl mb-6">Compare the programs</h2>
-            <div className="overflow-x-auto border border-white/10 rounded-xl">
+            <div className="md:hidden space-y-4">
+              {pkgs.map((p) => (
+                <div key={p.key} className="card-dark p-5" data-testid={`compare-card-${p.key}`}>
+                  <h3 className="font-serif text-xl">{p.name}</h3>
+                  {p.situation_quote && <p className="text-sm text-slate-300 mt-2 leading-relaxed">{p.situation_quote}</p>}
+                  <div className="mt-4 flex items-end justify-between gap-4 text-sm">
+                    <span className="text-slate-400">{p.duration_label || "—"}</span>
+                    <span className="font-medium text-right">{servicePrice(p).main}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="hidden md:block overflow-x-auto border border-white/10 rounded-xl">
               <table className="w-full text-sm min-w-[640px]">
                 <thead className="text-left text-slate-400">
                   <tr className="border-b border-white/10">

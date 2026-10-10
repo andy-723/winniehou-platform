@@ -40,9 +40,9 @@ export default function Cart() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-16" data-testid="cart-page">
-      <PageHeader eyebrow="Your cart" title={`${cart.count} item${cart.count === 1 ? "" : "s"}`} />
+      <PageHeader tone="light" eyebrow="Your cart" title={`${cart.count} item${cart.count === 1 ? "" : "s"}`} />
       {cart.count === 0 ? (
-        <Empty title="Your cart is empty" hint="Browse the catalog or the workbook shop to get started." cta={<Link to="/courses" className="btn-gold" data-testid="cart-browse-btn">Browse courses</Link>} />
+        <Empty tone="light" title="Your cart is empty" hint="Browse the catalog or the workbook shop to get started." cta={<Link to="/courses" className="btn-gold" data-testid="cart-browse-btn">Browse courses</Link>} />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-7 space-y-4">

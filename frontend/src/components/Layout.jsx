@@ -26,10 +26,10 @@ export const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 bg-[#0A192F]/95 backdrop-blur-md border-b border-amber-500/20 text-white">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
-        <Link to="/" data-testid="nav-logo" className="font-serif text-lg tracking-[0.25em] text-amber-400">
+        <Link to="/" data-testid="nav-logo" className="font-serif text-lg tracking-[0.25em] text-amber-400 whitespace-nowrap shrink-0">
           WINNIE HOU
         </Link>
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-8">
           {links.map((l) => (
             <NavLink key={l.to} to={l.to} className={cls} data-testid={`nav-${l.label.toLowerCase()}`}>{l.label}</NavLink>
           ))}
@@ -45,27 +45,27 @@ export const Navbar = () => {
             </Link>
           )}
           {isAdmin && (
-            <Link to="/admin" data-testid="nav-admin" className="hidden md:inline-flex items-center gap-1.5 text-xs border border-amber-500/40 text-amber-300 px-3 py-1.5 rounded-lg hover:bg-amber-500/10 transition-colors">
+            <Link to="/admin" data-testid="nav-admin" className="hidden lg:inline-flex items-center gap-1.5 text-xs border border-amber-500/40 text-amber-300 px-3 py-1.5 rounded-lg hover:bg-amber-500/10 transition-colors">
               <LayoutDashboard size={14} /> Admin
             </Link>
           )}
           {user ? (
-            <button data-testid="nav-logout" onClick={() => { logout(); nav("/"); }} className="hidden md:inline-flex items-center gap-1.5 text-sm text-slate-300 hover:text-white transition-colors">
+            <button data-testid="nav-logout" onClick={() => { logout(); nav("/"); }} className="hidden lg:inline-flex items-center gap-1.5 text-sm text-slate-300 hover:text-white transition-colors">
               <LogOut size={15} /> Sign out
             </button>
           ) : (
-            <Link to="/login" data-testid="nav-login" className="hidden md:inline-flex bg-amber-500 hover:bg-amber-400 text-[#0A192F] text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Sign in</Link>
+            <Link to="/login" data-testid="nav-login" className="hidden lg:inline-flex bg-amber-500 hover:bg-amber-400 text-[#0A192F] text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Sign in</Link>
           )}
-          <button className="md:hidden p-2" onClick={() => setOpen(!open)} data-testid="nav-mobile-toggle">{open ? <X size={20} /> : <Menu size={20} />}</button>
+          <button className="lg:hidden min-h-11 min-w-11 -mr-2 flex items-center justify-center" onClick={() => setOpen(!open)} data-testid="nav-mobile-toggle" aria-label={open ? "Close menu" : "Open menu"}>{open ? <X size={20} /> : <Menu size={20} />}</button>
         </div>
       </div>
       {open && (
-        <div className="md:hidden border-t border-white/10 px-6 py-4 flex flex-col gap-3 bg-[#0A192F]">
-          {links.map((l) => <NavLink key={l.to} to={l.to} onClick={() => setOpen(false)} className={cls}>{l.label}</NavLink>)}
-          {user && <NavLink to="/dashboard" onClick={() => setOpen(false)} className={cls}>My Learning</NavLink>}
-          {isAdmin && <NavLink to="/admin" onClick={() => setOpen(false)} className={cls}>Admin</NavLink>}
-          {user ? <button onClick={() => { logout(); nav("/"); }} className="text-left text-sm text-slate-300">Sign out</button>
-                : <Link to="/login" onClick={() => setOpen(false)} className="text-sm text-amber-400">Sign in</Link>}
+        <div className="lg:hidden border-t border-white/10 px-6 py-2 flex flex-col bg-[#0A192F]">
+          {links.map((l) => <NavLink key={l.to} to={l.to} onClick={() => setOpen(false)} className={({ isActive }) => `${cls({ isActive })} py-3`}>{l.label}</NavLink>)}
+          {user && <NavLink to="/dashboard" onClick={() => setOpen(false)} className={({ isActive }) => `${cls({ isActive })} py-3`}>My Learning</NavLink>}
+          {isAdmin && <NavLink to="/admin" onClick={() => setOpen(false)} className={({ isActive }) => `${cls({ isActive })} py-3`}>Admin</NavLink>}
+          {user ? <button onClick={() => { logout(); nav("/"); }} className="text-left text-sm text-slate-300 py-3">Sign out</button>
+                : <Link to="/login" onClick={() => setOpen(false)} className="text-sm text-amber-400 py-3">Sign in</Link>}
         </div>
       )}
     </header>
@@ -75,36 +75,36 @@ export const Navbar = () => {
 export const Footer = () => (
   <footer className="bg-[#060F1E] text-slate-400 mt-24">
     <div className="gold-rule" />
-    <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-12 gap-10">
-      <div className="md:col-span-5">
+    <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-12 gap-10">
+      <div className="sm:col-span-2 xl:col-span-5 min-w-0">
         <div className="font-serif text-xl tracking-[0.25em] text-amber-400 mb-4">WINNIE HOU</div>
         <p className="text-sm leading-relaxed max-w-sm">Business English mastery for ambitious professionals. Self-paced video courses, practical workbooks, and the language of leadership.</p>
       </div>
-      <div className="md:col-span-3">
+      <div className="xl:col-span-3 min-w-0">
         <div className="eyebrow mb-4">Explore</div>
-        <ul className="space-y-2 text-sm">
-          <li><Link to="/about" className="hover:text-white transition-colors">About Winnie</Link></li>
-          <li><Link to="/courses" className="hover:text-white transition-colors">All courses</Link></li>
-          <li><Link to="/services" className="hover:text-white transition-colors">Coaching services</Link></li>
-          <li><Link to="/shop" className="hover:text-white transition-colors">Workbooks</Link></li>
-          <li><Link to="/blog" className="hover:text-white transition-colors">Blog & announcements</Link></li>
-          <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+        <ul className="space-y-1 text-sm">
+          <li><Link to="/about" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0">About Winnie</Link></li>
+          <li><Link to="/courses" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0">All courses</Link></li>
+          <li><Link to="/services" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0">Coaching services</Link></li>
+          <li><Link to="/shop" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0">Workbooks</Link></li>
+          <li><Link to="/blog" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0">Blog & announcements</Link></li>
+          <li><Link to="/contact" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0">Contact</Link></li>
         </ul>
       </div>
-      <div className="md:col-span-3">
+      <div className="xl:col-span-3 min-w-0">
         <div className="eyebrow mb-4">Account</div>
-        <ul className="space-y-2 text-sm">
-          <li><Link to="/dashboard" className="hover:text-white transition-colors">My learning</Link></li>
-          <li><Link to="/dashboard?tab=orders" className="hover:text-white transition-colors">Orders & receipts</Link></li>
-          <li><Link to="/login" className="hover:text-white transition-colors">Sign in</Link></li>
+        <ul className="space-y-1 text-sm">
+          <li><Link to="/dashboard" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0">My learning</Link></li>
+          <li><Link to="/dashboard?tab=orders" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0">Orders & receipts</Link></li>
+          <li><Link to="/login" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0">Sign in</Link></li>
         </ul>
       </div>
-      <div className="md:col-span-1">
+      <div className="xl:col-span-1 min-w-0">
         <div className="eyebrow mb-4">Legal</div>
-        <ul className="space-y-2 text-sm">
-          <li><Link to="/terms" className="hover:text-white transition-colors" data-testid="footer-terms">Terms</Link></li>
-          <li><Link to="/privacy" className="hover:text-white transition-colors" data-testid="footer-privacy">Privacy</Link></li>
-          <li><Link to="/disclaimer" className="hover:text-white transition-colors" data-testid="footer-disclaimer">Disclaimer</Link></li>
+        <ul className="space-y-1 text-sm">
+          <li><Link to="/terms" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0" data-testid="footer-terms">Terms</Link></li>
+          <li><Link to="/privacy" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0" data-testid="footer-privacy">Privacy</Link></li>
+          <li><Link to="/disclaimer" className="hover:text-white transition-colors inline-block py-1.5 xl:py-0" data-testid="footer-disclaimer">Disclaimer</Link></li>
         </ul>
       </div>
     </div>
