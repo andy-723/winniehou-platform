@@ -30,6 +30,9 @@ COURSES = [
      "duration_hours": 6.5, "published": True,
      "outcomes": ["Open and close high-stakes presentations with confidence", "Handle hostile questions gracefully",
                   "Use rhetorical structure native executives rely on", "Eliminate filler and hedging language"],
+     "audience": ["Senior professionals who already speak English and want to sound like a leader",
+                  "Managers who present to executives, boards, or clients",
+                  "Anyone who hedges, fills silence, or loses the room in Q&A"],
      "description": "<p>A six-module masterclass for senior professionals who already speak good English but want to <em>sound like a leader</em>. Winnie breaks down the language patterns of Fortune 500 executives and gives you repeatable frameworks.</p>",
      "modules": [
          module("Foundations of Executive Voice", "Pace, pause and precision.", [
@@ -50,6 +53,9 @@ COURSES = [
      "duration_hours": 4, "published": True,
      "outcomes": ["Write concise emails in under 5 minutes", "Master tone: direct yet diplomatic",
                   "Templates for requests, follow-ups and bad news", "Avoid the 12 most common non-native mistakes"],
+     "audience": ["Professionals who write in English every day and want a reply, not silence",
+                  "Non-native writers who are polite but unclear",
+                  "Teams that want one standard for requests, follow-ups, and bad news"],
      "description": "<p>The most-requested course by Winnie's corporate clients. Every lesson comes with downloadable templates you can adapt immediately.</p>",
      "modules": [
          module("Email Fundamentals", "Subject lines, openers and structure.", [
@@ -66,6 +72,9 @@ COURSES = [
      "duration_hours": 5, "published": True,
      "outcomes": ["Open negotiations from a position of strength", "Make and refuse concessions diplomatically",
                   "Read and use conditional language precisely", "Summarise and close agreements"],
+     "audience": ["Deal-makers working across borders",
+                  "People who need precise conditional language in live negotiations",
+                  "Professionals who freeze when a negotiation stalls"],
      "description": "<p>Built from real transcripts of cross-border deals. Learn how native negotiators soften, strengthen and steer.</p>",
      "modules": [
          module("Setting the Table", "Agendas, positions and interests.", [
@@ -82,6 +91,9 @@ COURSES = [
      "duration_hours": 3, "published": True,
      "outcomes": ["Start conversations naturally at events", "Keep conversations flowing with follow-up questions",
                   "Exit conversations gracefully", "Culture tips for global teams"],
+     "audience": ["Beginners who go quiet at conferences and in the office",
+                  "Professionals joining a global team",
+                  "Anyone who wants a way into a conversation and a graceful way out"],
      "description": "<p>Perfect for professionals who freeze at conferences or in the office kitchen. Short, practical, and immediately useful.</p>",
      "modules": [
          module("Starting Conversations", "Icebreakers that don't feel forced.", [
@@ -110,11 +122,29 @@ POSTS = [
 ]
 
 SERVICE_PACKAGES = [
-    {"key": "career-coaching-essentials", "name": "Career Coaching Essentials", "tagline": "[TAGLINE TO COME]",
+    {"key": "career-coaching-essentials", "name": "Career Coaching Essentials",
+     "tagline": "Get clear on where you're going, then get seen for it.",
+     "description": "For professionals who know they are capable but aren't getting the response they expect. We work out which roles fit your experience in the Australian market, then rebuild how you present yourself so recruiters and hiring managers can see it in the first ten seconds.",
+     "situation_quote": "I'm applying everywhere and hearing nothing back.",
+     "for_you_if": ["You've sent many applications with few or no replies", "Your experience is from overseas and doesn't seem to translate here", "You're changing direction and aren't sure how to position it"],
+     "inclusions": ["Your Career Development Plan", "Resume rewritten for Australian employers and applicant tracking systems", "LinkedIn profile rebuilt so recruiters find you", "A target list of roles and employers, and how to approach them"],
+     "outcomes_intro": "", "duration_label": "",
      "price_cents": 210000, "gst_treatment": "ex_gst", "sort_order": 1, "cta_type": "book_call"},
-    {"key": "interview-for-success", "name": "Interview for Success", "tagline": "[TAGLINE TO COME]",
+    {"key": "interview-for-success", "name": "Interview for Success",
+     "tagline": "Walk in prepared. Walk out remembered.",
+     "description": "For when the interviews are coming but the offers aren't. We practise the questions your target roles will actually ask, shape your experience into clear stories, and rehearse until your answers sound like you on your best day.",
+     "situation_quote": "I'm getting interviews, but not the offer.",
+     "for_you_if": ["You reach interviews but don't get the offer", "You know your work well but find it hard to talk about it under pressure", "You have an important interview coming up and want to be ready"],
+     "inclusions": ["Mock interviews with honest, specific feedback", "Your best examples written up as STAR stories you can reuse", "Answers for the questions you dread, including salary", "A debrief after each real interview"],
+     "outcomes_intro": "", "duration_label": "",
      "price_cents": 210000, "gst_treatment": "ex_gst", "sort_order": 2, "cta_type": "book_call"},
-    {"key": "business-english-quantum-leap", "name": "Business English Quantum Leap", "tagline": "[TAGLINE TO COME]",
+    {"key": "business-english-quantum-leap", "name": "Business English Quantum Leap",
+     "tagline": "English that carries authority in the room.",
+     "description": "For professionals whose English is already good, who want it to sound confident and senior in meetings, presentations and everyday workplace conversations. Over twelve weeks we work on the situations that matter in your job, one each week.",
+     "situation_quote": "My English is good. I want it to sound senior.",
+     "for_you_if": ["You hold back in meetings even when you know the answer", "Your writing is correct but doesn't sound natural to colleagues", "You're stepping into a role where you'll lead, present or negotiate"],
+     "inclusions": ["Weekly one-to-one sessions for 12 weeks", "Speaking up, disagreeing politely and leading a meeting", "Emails and messages that read as clear and professional", "Presentations rehearsed with feedback"],
+     "outcomes_intro": "", "duration_label": "12 weeks",
      "price_cents": 385000, "gst_treatment": "inc_gst", "sort_order": 4, "cta_type": "enquire"},
 ]
 
@@ -153,14 +183,22 @@ async def seed_demo():
                                    "password_hash": hash_password("Student123!"), "created_at": now_iso(), "disabled": False})
 
 
+COPY_KEYS = ("tagline", "description", "inclusions", "situation_quote", "for_you_if", "outcomes_intro", "duration_label")
+
+
 async def seed_services():
     for p in SERVICE_PACKAGES:
+        copy = {k: p[k] for k in COPY_KEYS if k in p}
+        price = {k: v for k, v in p.items() if k not in COPY_KEYS}
         await db.service_packages.update_one(
             {"key": p["key"]},
-            {"$setOnInsert": {**p, "id": new_id(), "description": "[DESCRIPTION TO COME]",
-                              "inclusions": ["[INCLUSIONS TO COME]"], "duration_label": "", "status": "published",
+            {"$setOnInsert": {**price, **copy, "id": new_id(), "status": "published",
                               "currency": "AUD", "created_at": now_iso(), "updated_at": now_iso()}},
             upsert=True)
+        # Fill the draft only while the public copy is still the placeholder. Later edits stay.
+        existing = await db.service_packages.find_one({"key": p["key"]})
+        if existing and (not existing.get("situation_quote") or existing.get("description") in ("", "[DESCRIPTION TO COME]")):
+            await db.service_packages.update_one({"key": p["key"]}, {"$set": {**copy, "updated_at": now_iso()}})
 
 
 TIME_CATEGORIES = {
@@ -178,6 +216,47 @@ async def seed_time():
         for i, n in enumerate(names):
             await db.time_categories.update_one({"subject_type": st, "name": n},
                                                 {"$setOnInsert": {"id": new_id(), "subject_type": st, "name": n, "order": i}}, upsert=True)
+
+
+PLACEMENTS = [
+    ("Commonwealth Bank (CBA)", 1),
+    ("EY", 2),
+    ("PwC", 3),
+    ("Deloitte", 4),
+    ("University of Canberra", 5),
+]
+
+
+INDUSTRY_PANELS = [
+    {"title": "Banking", "left_label": "Analyst to Associate", "right_label": "Commonwealth Bank", "sort_order": 1},
+    {"title": "The Big Four", "left_label": "Graduate to Consultant", "right_label": "EY · PwC · Deloitte", "sort_order": 2},
+    {"title": "Higher education", "left_label": "Researcher to Lecturer", "right_label": "University of Canberra", "sort_order": 3},
+]
+
+
+async def seed_industries():
+    for panel in INDUSTRY_PANELS:
+        await db.industry_panels.update_one(
+            {"title": panel["title"]},
+            {"$setOnInsert": {
+                **panel, "id": new_id(), "image_url": "", "alt": "",
+                "published": False, "created_at": now_iso(), "updated_at": now_iso(),
+            }},
+            upsert=True,
+        )
+
+
+async def seed_placements():
+    for name, order in PLACEMENTS:
+        await db.client_placements.update_one(
+            {"name": name},
+            {"$setOnInsert": {
+                "id": new_id(), "name": name, "logo_url": "", "alt": "",
+                "sort_order": order, "confirmed": False, "published": False,
+                "created_at": now_iso(), "updated_at": now_iso(),
+            }},
+            upsert=True,
+        )
 
 
 async def ensure_indexes():
@@ -203,3 +282,7 @@ async def ensure_indexes():
     await db.time_entries.create_index("client_id")
     await db.time_entries.create_index("student_id")
     await db.time_categories.create_index([("subject_type", 1), ("name", 1)], unique=True)
+    await db.client_placements.create_index("id", unique=True)
+    await db.client_placements.create_index("name", unique=True)
+    await db.industry_panels.create_index("id", unique=True)
+    await db.industry_panels.create_index("title", unique=True)

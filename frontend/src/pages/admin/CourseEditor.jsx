@@ -66,7 +66,8 @@ export default function CourseEditor() {
               <div><label className="label-lux">Duration (hours)</label><input type="number" step="0.5" className="input-lux" value={c.duration_hours} onChange={(e) => set("duration_hours", e.target.value)} /></div>
               <div><label className="label-lux">Topics (comma sep.)</label><input className="input-lux" value={c.topics.join(", ")} onChange={(e) => set("topics", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} data-testid="course-topics-input" /></div>
             </div>
-            <div><label className="label-lux">Outcomes (one per line)</label><textarea className="input-lux" rows={4} value={c.outcomes.join("\n")} onChange={(e) => set("outcomes", e.target.value.split("\n").filter(Boolean))} /></div>
+            <div><label className="label-lux">Outcomes (one per line)</label><textarea className="input-lux" rows={4} value={(c.outcomes || []).join("\n")} onChange={(e) => set("outcomes", e.target.value.split("\n").filter(Boolean))} /></div>
+            <div><label className="label-lux">Who this course is for (one per line)</label><textarea className="input-lux" rows={4} value={(c.audience || []).join("\n")} onChange={(e) => set("audience", e.target.value.split("\n").filter(Boolean))} data-testid="course-audience-input" /></div>
             <div>
               <label className="label-lux">Thumbnail</label>
               {c.thumbnail_url && <img src={c.thumbnail_url} alt="" className="w-full aspect-video object-cover rounded-lg mb-2" />}

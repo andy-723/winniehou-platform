@@ -143,6 +143,7 @@ class CourseIn(BaseModel):
     thumbnail_url: str = ""
     published: bool = False
     outcomes: List[str] = []
+    audience: List[str] = []
     duration_hours: float = 0
     modules: Optional[List[Any]] = None
 
@@ -482,6 +483,9 @@ class ServicePackageIn(BaseModel):
     tagline: str = ""
     description: str = ""
     inclusions: List[str] = []
+    situation_quote: str = ""
+    for_you_if: List[str] = []
+    outcomes_intro: str = ""
     duration_label: str = ""
     price_cents: int = 0
     gst_treatment: str = "ex_gst"
@@ -545,3 +549,112 @@ async def admin_waitlist():
 @router.get("/lead-visits")
 async def admin_lead_visits():
     return await db.lead_visits.find({}, NO_ID).sort("created_at", -1).to_list(1000)
+
+
+# ---------- homepage hero and client placements ----------
+class HeroSlot(BaseModel):
+    url: str = ""
+    alt: str = ""
+
+
+class HomepageHeroIn(BaseModel):
+    portrait: HeroSlot = HeroSlot()
+    portrait_mobile: HeroSlot = HeroSlot()
+    side_left: HeroSlot = HeroSlot()
+    side_right: HeroSlot = HeroSlot()
+
+
+def _empty_hero():
+    blank = {"url": "", "alt": ""}
+    return {"portrait": dict(blank), "portrait_mobile": dict(blank), "side_left": dict(blank), "side_right": dict(blank)}
+
+
+@router.get("/homepage-hero")
+async def admin_homepage_hero():
+    s = await db.settings.find_one({"key": "homepage_hero"}, {"_id": 0}) or {}
+    value = s.get("value") or {}
+    base = _empty_hero()
+    for key in base:
+        raw = value.get(key) or {}
+        base[key] = {"url": raw.get("url") or "", "alt": raw.get("alt") or ""}
+    return base
+
+
+@router.put("/homepage-hero")
+async def save_homepage_hero(body: HomepageHeroIn):
+    value = body.model_dump()
+    await db.settings.update_one({"key": "homepage_hero"}, {"$set": {"key": "homepage_hero", "value": value, "updated_at": now_iso()}}, upsert=True)
+    return value
+
+
+class PlacementIn(BaseModel):
+    name: str
+    logo_url: str = ""
+    alt: str = ""
+    sort_order: int = 0
+    confirmed: bool = False
+    published: bool = False
+
+
+@router.get("/placements")
+async def admin_placements():
+    return await db.client_placements.find({}, NO_ID).sort("sort_order", 1).to_list(200)
+
+
+@router.post("/placements")
+async def create_placement(body: PlacementIn):
+    doc = {**body.model_dump(), "id": new_id(), "created_at": now_iso(), "updated_at": now_iso()}
+    await db.client_placements.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+@router.put("/placements/{pid}")
+async def update_placement(pid: str, body: PlacementIn):
+    res = await db.client_placements.update_one({"id": pid}, {"$set": {**body.model_dump(), "updated_at": now_iso()}})
+    if not res.matched_count:
+        raise HTTPException(404, "Placement not found")
+    return await db.client_placements.find_one({"id": pid}, NO_ID)
+
+
+@router.delete("/placements/{pid}")
+async def delete_placement(pid: str):
+    await db.client_placements.delete_one({"id": pid})
+    return {"ok": True}
+
+
+class IndustryPanelIn(BaseModel):
+    title: str
+    left_label: str = ""
+    right_label: str = ""
+    image_url: str = ""
+    alt: str = ""
+    sort_order: int = 0
+    published: bool = False
+
+
+@router.get("/industry-panels")
+async def admin_industry_panels():
+    return await db.industry_panels.find({}, NO_ID).sort("sort_order", 1).to_list(100)
+
+
+@router.post("/industry-panels")
+async def create_industry_panel(body: IndustryPanelIn):
+    doc = {**body.model_dump(), "id": new_id(), "created_at": now_iso(), "updated_at": now_iso()}
+    await db.industry_panels.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+@router.put("/industry-panels/{pid}")
+async def update_industry_panel(pid: str, body: IndustryPanelIn):
+    res = await db.industry_panels.update_one({"id": pid}, {"$set": {**body.model_dump(), "updated_at": now_iso()}})
+    if not res.matched_count:
+        raise HTTPException(404, "Panel not found")
+    return await db.industry_panels.find_one({"id": pid}, NO_ID)
+
+
+@router.delete("/industry-panels/{pid}")
+async def delete_industry_panel(pid: str):
+    await db.industry_panels.delete_one({"id": pid})
+    return {"ok": True}

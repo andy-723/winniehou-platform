@@ -1,1 +1,35 @@
-# Here are your Instructions
+# Winnie Hou platform
+
+Business English LMS: FastAPI API, React frontend, MongoDB.
+
+## Run locally with Docker
+
+From this directory:
+
+```bash
+docker compose up --build
+```
+
+Published ports, matching the ports this app used before:
+
+- UI: http://127.0.0.1:3000
+- API: http://127.0.0.1:8001 (also proxied at http://127.0.0.1:3000/api)
+
+MongoDB stays on the Compose network and is not published to the host.
+
+Stop with `docker compose down`. Data is kept in the `mongo-data` volume.
+
+## Local admin
+
+On startup the API seeds an admin user from the environment:
+
+- email: `admin@example.com` (the API rejects addresses without a dot in the domain)
+- password: `local-admin-password`
+
+Change `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `JWT_SECRET` before any shared or public use. Copy `env.example` to `.env` to override them. `.env` is gitignored.
+
+## What works without extra credentials
+
+Catalog, blog, auth, admin CMS, and seeded courses run with the defaults. Stripe uses the app's existing test-key fallback when `STRIPE_SECRET_KEY` is empty, so live charges are not configured. Bunny Stream upload and Emergent email/Claude resume parsing need their own keys (`BUNNY_*`, `EMERGENT_EMAIL_KEY`, `EMERGENT_LLM_KEY`). `emergentintegrations` is not published on PyPI, so the image omits it and the private `litellm` wheel; the API still starts, and resume parsing fails until that package is installed with a key.
+
+Auth cookies are marked `Secure`, so over plain HTTP the UI uses the bearer token returned by login (stored in localStorage).

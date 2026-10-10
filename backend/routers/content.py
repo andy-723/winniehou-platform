@@ -40,7 +40,39 @@ async def public_settings():
     return s.get("value", {})
 
 
+def _hero_slot(value, key):
+    raw = (value or {}).get(key) or {}
+    return {"url": raw.get("url") or "", "alt": raw.get("alt") or ""}
+
+
+@router.get("/homepage")
+async def homepage():
+    s = await db.settings.find_one({"key": "homepage_hero"}, {"_id": 0}) or {}
+    value = s.get("value") or {}
+    placements = await db.client_placements.find(
+        {"confirmed": True, "published": True, "logo_url": {"$nin": ["", None]}},
+        {"_id": 0, "id": 1, "name": 1, "logo_url": 1, "alt": 1, "sort_order": 1},
+    ).sort("sort_order", 1).to_list(100)
+    return {
+        "portrait": _hero_slot(value, "portrait"),
+        "portrait_mobile": _hero_slot(value, "portrait_mobile"),
+        "side_left": _hero_slot(value, "side_left"),
+        "side_right": _hero_slot(value, "side_right"),
+        "placements": placements,
+    }
+
+
 # ---------- services ----------
+@router.get("/industry-panels")
+async def industry_panels():
+    panels = await db.industry_panels.find(
+        {"published": True, "image_url": {"$nin": ["", None]}},
+        {"_id": 0, "id": 1, "title": 1, "left_label": 1, "right_label": 1, "image_url": 1, "alt": 1, "sort_order": 1},
+    ).sort("sort_order", 1).to_list(50)
+    confirmed = await db.client_placements.find({"confirmed": True}, {"_id": 0, "name": 1}).to_list(100)
+    return {"panels": panels, "confirmed_employers": [c.get("name") or "" for c in confirmed]}
+
+
 @router.get("/services")
 async def list_services():
     return await db.service_packages.find({"status": "published"}, {"_id": 0}).sort("sort_order", 1).to_list(100)

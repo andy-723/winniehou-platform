@@ -75,20 +75,20 @@ export const Spinner = ({ label = "Loading" }) => (
   </div>
 );
 
-export const Empty = ({ title, hint, cta }) => (
-  <div className="text-center py-20 border border-dashed border-white/15 rounded-xl bg-white/5" data-testid="empty-state">
-    <h3 className="font-serif text-2xl text-[#F9F8F3]">{title}</h3>
-    {hint && <p className="text-slate-400 text-sm mt-2">{hint}</p>}
+export const Empty = ({ title, hint, cta, tone = "dark" }) => (
+  <div className={`text-center py-20 border border-dashed rounded-xl ${tone === "light" ? "border-slate-300 bg-white" : "border-white/15 bg-white/5"}`} data-testid="empty-state">
+    <h3 className={`font-serif text-2xl ${tone === "light" ? "text-[#0A192F]" : "text-[#F9F8F3]"}`}>{title}</h3>
+    {hint && <p className={`text-sm mt-2 ${tone === "light" ? "text-slate-600" : "text-slate-400"}`}>{hint}</p>}
     {cta && <div className="mt-6">{cta}</div>}
   </div>
 );
 
-export const PageHeader = ({ eyebrow, title, sub, right }) => (
+export const PageHeader = ({ eyebrow, title, sub, right, tone = "dark" }) => (
   <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
     <div>
-      {eyebrow && <div className="eyebrow-dark mb-3">{eyebrow}</div>}
-      <h1 className="font-serif text-4xl sm:text-5xl text-[#F9F8F3] tracking-tight">{title}</h1>
-      {sub && <p className="text-base md:text-lg text-slate-400 mt-3 max-w-2xl">{sub}</p>}
+      {eyebrow && <div className={`${tone === "light" ? "eyebrow" : "eyebrow-dark"} mb-3`}>{eyebrow}</div>}
+      <h1 className={`font-serif text-4xl sm:text-5xl tracking-tight ${tone === "light" ? "text-[#0A192F]" : "text-[#F9F8F3]"}`}>{title}</h1>
+      {sub && <p className={`text-base md:text-lg mt-3 max-w-2xl ${tone === "light" ? "text-slate-600" : "text-slate-400"}`}>{sub}</p>}
     </div>
     {right}
   </div>

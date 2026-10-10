@@ -17,7 +17,7 @@ export default function Catalog() {
 
   const Chip = ({ active, onClick, children, testId }) => (
     <button onClick={onClick} data-testid={testId}
-      className={`px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors ${active ? "bg-amber-500 text-[#0A192F] border-amber-500" : "bg-transparent text-slate-300 border-white/15 hover:border-amber-400 hover:text-amber-300"}`}>{children}</button>
+      className={`min-h-11 md:min-h-0 md:py-1.5 px-3.5 rounded-full text-xs font-medium border transition-colors ${active ? "bg-amber-500 text-[#0A192F] border-amber-500" : "bg-transparent text-slate-300 border-white/15 hover:border-amber-400 hover:text-amber-300"}`}>{children}</button>
   );
 
   return (

@@ -6,7 +6,7 @@ import { servicePrice } from "@/lib/config";
 import { Spinner } from "@/components/Shared";
 import { AdminHeader, Table, Modal } from "./AdminLayout";
 
-const blank = { key: "", name: "", tagline: "", description: "", inclusions: "", duration_label: "", price_cents: 0, gst_treatment: "ex_gst", sort_order: 0, status: "draft", cta_type: "enquire" };
+const blank = { key: "", name: "", tagline: "", description: "", inclusions: "", situation_quote: "", for_you_if: "", outcomes_intro: "", duration_label: "", price_cents: 0, gst_treatment: "ex_gst", sort_order: 0, status: "draft", cta_type: "enquire" };
 
 export default function AdminServices() {
   const [tab, setTab] = useState("packages");
@@ -27,6 +27,7 @@ export default function AdminServices() {
       const body = {
         ...edit,
         inclusions: typeof edit.inclusions === "string" ? edit.inclusions.split("\n").map((s) => s.trim()).filter(Boolean) : edit.inclusions,
+        for_you_if: typeof edit.for_you_if === "string" ? edit.for_you_if.split("\n").map((s) => s.trim()).filter(Boolean) : (edit.for_you_if || []),
         price_cents: Number(edit.price_cents) || 0,
         sort_order: Number(edit.sort_order) || 0,
       };
@@ -54,7 +55,7 @@ export default function AdminServices() {
           <td className="px-4 py-3">{p.cta_type}</td>
           <td className="px-4 py-3"><span className="gold-badge">{p.status}</span></td>
           <td className="px-4 py-3">{p.sort_order}</td>
-          <td className="px-4 py-3 text-right whitespace-nowrap"><button onClick={() => setEdit({ ...p, inclusions: (p.inclusions || []).join("\n") })} className="text-amber-700 mr-3" data-testid={`edit-package-${p.key}`}><Pencil size={15} /></button><button onClick={() => del(p.id)} className="text-red-600" data-testid={`delete-package-${p.key}`}><Trash2 size={15} /></button></td>
+          <td className="px-4 py-3 text-right whitespace-nowrap"><button onClick={() => setEdit({ ...p, inclusions: (p.inclusions || []).join("\n"), for_you_if: (p.for_you_if || []).join("\n") })} className="text-amber-700 mr-3" data-testid={`edit-package-${p.key}`}><Pencil size={15} /></button><button onClick={() => del(p.id)} className="text-red-600" data-testid={`delete-package-${p.key}`}><Trash2 size={15} /></button></td>
         </tr>
       )} />}
 
@@ -85,8 +86,10 @@ export default function AdminServices() {
               <label className="block">Key (slug)<input className="input-lux mt-1" value={edit.key} onChange={(e) => setEdit({ ...edit, key: e.target.value })} data-testid="pkg-key" /></label>
             </div>
             <label className="block">Tagline<input className="input-lux mt-1" value={edit.tagline} onChange={(e) => setEdit({ ...edit, tagline: e.target.value })} data-testid="pkg-tagline" /></label>
+            <label className="block">Situation quote<input className="input-lux mt-1" value={edit.situation_quote || ""} onChange={(e) => setEdit({ ...edit, situation_quote: e.target.value })} data-testid="pkg-situation" /></label>
             <label className="block">Description<textarea rows={3} className="input-lux mt-1" value={edit.description} onChange={(e) => setEdit({ ...edit, description: e.target.value })} data-testid="pkg-description" /></label>
-            <label className="block">Inclusions (one per line)<textarea rows={4} className="input-lux mt-1" value={edit.inclusions} onChange={(e) => setEdit({ ...edit, inclusions: e.target.value })} data-testid="pkg-inclusions" /></label>
+            <label className="block">This is for you if (one per line)<textarea rows={3} className="input-lux mt-1" value={edit.for_you_if || ""} onChange={(e) => setEdit({ ...edit, for_you_if: e.target.value })} data-testid="pkg-for-you" /></label>
+            <label className="block">What we work on (one per line)<textarea rows={4} className="input-lux mt-1" value={edit.inclusions} onChange={(e) => setEdit({ ...edit, inclusions: e.target.value })} data-testid="pkg-inclusions" /></label>
             <div className="grid grid-cols-2 gap-4">
               <label className="block">Price (cents, AUD)<input type="number" className="input-lux mt-1" value={edit.price_cents} onChange={(e) => setEdit({ ...edit, price_cents: e.target.value })} data-testid="pkg-price" /></label>
               <label className="block">GST<select className="input-lux mt-1" value={edit.gst_treatment} onChange={(e) => setEdit({ ...edit, gst_treatment: e.target.value })} data-testid="pkg-gst"><option value="ex_gst">ex GST</option><option value="inc_gst">inc GST</option></select></label>
