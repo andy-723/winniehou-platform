@@ -1,0 +1,29 @@
+# Logins for the running Docker site. Sign in at /login.
+# The API reads ADMIN_EMAIL and ADMIN_PASSWORD when it starts.
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=local-admin-password
+
+# Demo student. Created by backend/seed.py. The API does not read these two lines.
+STUDENT_EMAIL=student@example.com
+STUDENT_PASSWORD=Student123!
+
+# Required to boot.
+MONGO_URL=mongodb://mongo:27017
+DB_NAME=winniehou
+JWT_SECRET=local-dev-jwt-secret-change-me
+EMAIL_FROM_NAME=Winnie Hou
+
+# Optional.
+EMAIL_REPLY_TO=
+CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+APP_NAME=winnie-lms
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+EMERGENT_LLM_KEY=
+EMERGENT_EMAIL_KEY=
+BUNNY_LIBRARY_ID=
+BUNNY_STREAM_API_KEY=
+BUNNY_TOKEN_AUTH_KEY=
+REACT_APP_BACKEND_URL=
+REACT_APP_CALENDLY_URL=
+REACT_APP_STRIPE_DEPOSIT_URL=
